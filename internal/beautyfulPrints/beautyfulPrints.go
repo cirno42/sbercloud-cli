@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/jmespath/go-jmespath"
+	"gopkg.in/yaml.v2"
+	"os"
 	"strings"
 )
 
@@ -11,17 +13,37 @@ func PrintError(err error) {
 	fmt.Printf("ERROR: %s\n", err.Error())
 }
 
-//todo: add check for print type (json/yaml/json-c)
 func PrintStruct(s interface{}, jmesPathQuery string) {
 	if len(strings.TrimSpace(jmesPathQuery)) > 0 {
 		printStructUsingQuery(s, jmesPathQuery)
 		return
 	}
-	b, err := json.MarshalIndent(s, "", "  ")
+	format := os.Getenv("OUTPUT_FORMAT")
+	if format == "YAML" {
+		printStructAsYaml(s)
+	} else if format == "JSON" {
+		printStructAsJson(s)
+	} else {
+		fmt.Println("Output format is not configured!")
+	}
+}
+
+func printStructAsYaml(s interface{}) {
+	output, err := yaml.Marshal(s)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
-	fmt.Print(string(b))
+	fmt.Print(string(output))
+}
+
+func printStructAsJson(s interface{}) {
+	output, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Print(string(output))
 }
 
 func printStructUsingQuery(s interface{}, query string) {
