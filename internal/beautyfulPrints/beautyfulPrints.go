@@ -46,6 +46,19 @@ func printStructAsJson(s interface{}) {
 	fmt.Print(string(output))
 }
 
+func PrintStructToFile(s interface{}, file *os.File) {
+	output, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	_, err = file.WriteString(string(output))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+}
+
 func printStructUsingQuery(s interface{}, query string) {
 	queryResult, err := jmespath.Search(query, s)
 	if err != nil {

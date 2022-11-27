@@ -11,8 +11,8 @@ type NatModel struct {
 	InternalNetworkID     string `json:"internal_network_id"`
 	ID                    string `json:"id"`
 	Name                  string `json:"name"`
-	DnatRulesLimit        string `json:"dnat_rules_limit"`
-	SnatRulePublicIPLimit string `json:"snat_rule_public_ip_limit"`
+	DnatRulesLimit        int    `json:"dnat_rules_limit"`
+	SnatRulePublicIPLimit int    `json:"snat_rule_public_ip_limit"`
 	EnterpriseProjectID   string `json:"enterprise_project_id"`
 	BillingInfo           string `json:"billing_info"`
 }
