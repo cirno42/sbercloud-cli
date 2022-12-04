@@ -1,5 +1,9 @@
 package endpoints
 
+import (
+	"os"
+)
+
 type ServicesEndpoints int
 
 const (
@@ -17,5 +21,9 @@ var ruMoscow1RegionEndpoints map[ServicesEndpoints]string = map[ServicesEndpoint
 }
 
 func GetEndpointAddress(endpoint ServicesEndpoints) string {
-	return ruMoscow1RegionEndpoints[endpoint]
+	region := os.Getenv("REGION")
+	if region == "RU-Moscow" {
+		return ruMoscow1RegionEndpoints[endpoint]
+	}
+	return ""
 }
