@@ -3,6 +3,7 @@ package beautyfulPrints
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/hokaccha/go-prettyjson"
 	"github.com/jmespath/go-jmespath"
 	"gopkg.in/yaml.v2"
 	"os"
@@ -23,6 +24,8 @@ func PrintStruct(s interface{}, jmesPathQuery string) {
 		printStructAsYaml(s)
 	} else if format == "JSON" {
 		printStructAsJson(s)
+	} else if format == "JSON-C" {
+		printStructAsJsonColor(s)
 	} else {
 		fmt.Println("Output format is not configured!")
 	}
@@ -39,6 +42,15 @@ func printStructAsYaml(s interface{}) {
 
 func printStructAsJson(s interface{}) {
 	output, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Print(string(output))
+}
+
+func printStructAsJsonColor(s interface{}) {
+	output, err := prettyjson.Marshal(s)
 	if err != nil {
 		fmt.Println(err)
 		return
