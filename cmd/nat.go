@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
 	"github.com/spf13/cobra"
 	"sbercloud-cli/api/models/natModels"
 	"sbercloud-cli/api/nat"
@@ -12,10 +11,9 @@ import (
 
 var natCmd = &cobra.Command{
 	Use:   "nat",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Command to interact with NAT",
+	Long:  `Command to interact with NAT`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("nat called")
 	},
 }
 
@@ -28,8 +26,8 @@ var natCreateEnterpriseProjectID string
 var natCreateRouterName string
 var natCreateCmd = &cobra.Command{
 	Use:   "create",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Create NAT",
+	Long:  `Create NAT`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var createdNat *natModels.NatModel
 		var err error
@@ -56,10 +54,28 @@ var natCreateCmd = &cobra.Command{
 	},
 }
 
+var natUpdateId string
+var natUpdateName string
+var natUpdateDesc string
+var natUpdateSpec string
+var natUpdateCmd = &cobra.Command{
+	Use:   "update",
+	Short: "Update NAT",
+	Long:  `Update NAT`,
+	Run: func(cmd *cobra.Command, args []string) {
+		updatedNat, err := nat.UpdateNAT(ProjectID, natUpdateId, natUpdateName, natUpdateDesc, natUpdateSpec)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(updatedNat, jmesPathQuery)
+		}
+	},
+}
+
 var natListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Get NAT list",
+	Long:  `Get NAT list`,
 	Run: func(cmd *cobra.Command, args []string) {
 		nats, err := nat.GetNatList(ProjectID)
 		if err != nil {
@@ -74,8 +90,8 @@ var natGetInfoNatID string
 var natGetInfoNatName string
 var natGetInfoCmd = &cobra.Command{
 	Use:   "info",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Get info about NAT",
+	Long:  `Get info about NAT`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		var natEntity *natModels.NatModel
@@ -98,8 +114,8 @@ var natDeleteNatID string
 var natDeleteNatName string
 var natDeleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Delete NAT",
+	Long:  `Delete NAT`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		if natDeleteNatID != "" {
@@ -124,18 +140,24 @@ func init() {
 	natCmd.AddCommand(natListCmd)
 	natCmd.AddCommand(natGetInfoCmd)
 	natCmd.AddCommand(natDeleteCmd)
+	natCmd.AddCommand(natUpdateCmd)
 
-	natCreateCmd.Flags().StringVarP(&natCreateName, "name", "n", "", "")
-	natCreateCmd.Flags().StringVarP(&natCreateDesc, "description", "d", "", "")
-	natCreateCmd.Flags().StringVarP(&natCreateRouterID, "router-id", "i", "", "")
-	natCreateCmd.Flags().StringVar(&natCreateInternalNetworkID, "network-id", "", "")
-	natCreateCmd.Flags().StringVarP(&natCreateSpec, "spec", "s", "1", "")
-	natCreateCmd.Flags().StringVarP(&natCreateEnterpriseProjectID, "ent-project-id", "p", "", "")
-	natCreateCmd.Flags().StringVarP(&natCreateRouterName, "router-name", "r", "", "")
+	natCreateCmd.Flags().StringVarP(&natCreateName, "name", "n", "", "Specifies the NAT gateway name. The name can contain only digits, letters, underscores (_), and hyphens (-).")
+	natCreateCmd.Flags().StringVarP(&natCreateDesc, "description", "d", "", "Provides supplementary information about the NAT gateway.")
+	natCreateCmd.Flags().StringVarP(&natCreateRouterID, "router-id", "i", "", "Specifies the VPC ID.")
+	natCreateCmd.Flags().StringVar(&natCreateInternalNetworkID, "network-id", "", "Specifies the network ID of the downstream interface (the next hop of the DVR) of the NAT gateway. ")
+	natCreateCmd.Flags().StringVarP(&natCreateSpec, "spec", "s", "1", "Specifies the NAT gateway type. The value can be: 1: small type, which supports up to 10,000 SNAT connections. 2: medium type, which supports up to 50,000 SNAT connections. 3: large type, which supports up to 200,000 SNAT connections. 4: extra-large type, which supports up to 1,000,000 SNAT connections.")
+	natCreateCmd.Flags().StringVarP(&natCreateEnterpriseProjectID, "ent-project-id", "p", "", "Specifies the enterprise project ID. When creating a NAT gateway, associate an enterprise project ID with the NAT gateway. The value 0 indicates the default enterprise project.")
+	natCreateCmd.Flags().StringVarP(&natCreateRouterName, "router-name", "r", "", "Specifies the VPC name.")
 
-	natGetInfoCmd.Flags().StringVarP(&natGetInfoNatID, "id", "i", "", "")
-	natGetInfoCmd.Flags().StringVarP(&natGetInfoNatName, "name", "n", "", "")
+	natUpdateCmd.Flags().StringVarP(&natUpdateId, "id", "i", "", "Specifies the NAT gateway ID")
+	natUpdateCmd.Flags().StringVarP(&natUpdateName, "name", "n", "", "Specifies the NAT gateway name. The name can contain only digits, letters, underscores (_), and hyphens (-).")
+	natUpdateCmd.Flags().StringVarP(&natUpdateDesc, "description", "d", "", "Provides supplementary information about the NAT gateway.")
+	natUpdateCmd.Flags().StringVarP(&natUpdateSpec, "spec", "s", "1", "Specifies the NAT gateway type. The value can be: 1: small type, which supports up to 10,000 SNAT connections. 2: medium type, which supports up to 50,000 SNAT connections. 3: large type, which supports up to 200,000 SNAT connections. 4: extra-large type, which supports up to 1,000,000 SNAT connections.")
 
-	natDeleteCmd.Flags().StringVarP(&natDeleteNatID, "id", "i", "", "")
-	natDeleteCmd.Flags().StringVarP(&natDeleteNatName, "name", "n", "", "")
+	natGetInfoCmd.Flags().StringVarP(&natGetInfoNatID, "id", "i", "", "Specifies the NAT ID.")
+	natGetInfoCmd.Flags().StringVarP(&natGetInfoNatName, "name", "n", "", "Specifies the NAT name.")
+
+	natDeleteCmd.Flags().StringVarP(&natDeleteNatID, "id", "i", "", "Specifies the NAT ID.")
+	natDeleteCmd.Flags().StringVarP(&natDeleteNatName, "name", "n", "", "Specifies the NAT name.")
 }

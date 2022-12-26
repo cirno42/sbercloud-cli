@@ -15,7 +15,7 @@ type FlavorModel struct {
 		Type interface{} `json:"type"`
 	} `json:"links"`
 	OSFLVEXTDATAEphemeral  int         `json:"OS-FLV-EXT-DATA:ephemeral"`
-	RxtxFactor             int         `json:"rxtx_factor"`
+	RxtxFactor             float64     `json:"rxtx_factor"`
 	OSFLVDISABLEDDisabled  bool        `json:"OS-FLV-DISABLED:disabled"`
 	RxtxQuota              interface{} `json:"rxtx_quota"`
 	RxtxCap                interface{} `json:"rxtx_cap"`

@@ -6,17 +6,17 @@ import (
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
+	"sbercloud-cli/api/eip"
 	"sbercloud-cli/api/models/dumpModels"
+	"sbercloud-cli/api/nat"
 	"sbercloud-cli/api/subnets"
 	"sbercloud-cli/api/vpcs"
 )
 
 var restoreCmd = &cobra.Command{
 	Use:   "restore",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "Restore infrastructure from specified file",
+	Long:  `Restore infrastructure from specified file`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var dump dumpModels.DumpModel
 		dumpFile, err := os.Open(restoreFileName)
@@ -28,6 +28,7 @@ here`,
 		dumpBytes, _ := ioutil.ReadAll(dumpFile)
 		err = json.Unmarshal(dumpBytes, &dump)
 		vpcKeysMapping := make(map[string]string)
+		subnetKeysMapping := make(map[string]string)
 		oldVpcs := dump.Vpcs
 		for _, oldVpc := range oldVpcs {
 			newVpc, err := vpcs.CreateVpc(ProjectID, oldVpc.Name, oldVpc.Description, oldVpc.Cidr)
@@ -39,9 +40,28 @@ here`,
 		}
 		oldSubnets := dump.Subnets
 		for _, oldSubnet := range oldSubnets {
-			_, err := subnets.CreateSubnet(ProjectID, oldSubnet.Name, oldSubnet.Description,
+			newSubnet, err := subnets.CreateSubnet(ProjectID, oldSubnet.Name, oldSubnet.Description,
 				oldSubnet.Cidr, oldSubnet.GatewayIp, oldSubnet.Ipv6Enable, oldSubnet.DhcpEnable, oldSubnet.PrimaryDns, oldSubnet.SecondaryDns,
 				oldSubnet.DnsList, oldSubnet.AvailabilityZone, vpcKeysMapping[oldSubnet.VpcId])
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			subnetKeysMapping[oldSubnet.Id] = newSubnet.Subnet.Id
+		}
+
+		oldEips := dump.Eips
+		for _, oldEip := range oldEips {
+			_, err := eip.AssignEIP(ProjectID, oldEip.EipType, oldEip.IPVersion, oldEip.BandwidthName, oldEip.BandwidthSize, oldEip.BandwidthShareType)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+		}
+
+		oldNats := dump.Nats
+		for _, oldNat := range oldNats {
+			_, err := nat.CreateNAT(ProjectID, oldNat.Name, oldNat.Description, vpcKeysMapping[oldNat.RouterID], subnetKeysMapping[oldNat.InternalNetworkID], oldNat.Spec, oldNat.EnterpriseProjectID)
 			if err != nil {
 				fmt.Println(err)
 				return

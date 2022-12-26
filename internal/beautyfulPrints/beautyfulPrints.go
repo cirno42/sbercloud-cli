@@ -77,5 +77,5 @@ func printStructUsingQuery(s interface{}, query string) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(queryResult)
+	printStructAsJson(queryResult)
 }

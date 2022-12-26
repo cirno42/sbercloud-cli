@@ -15,8 +15,8 @@ import (
 
 var dumpCmd = &cobra.Command{
 	Use:   "dump",
-	Short: "",
-	Long:  ``,
+	Short: "dump infrastructure to specified file",
+	Long:  `dump infrastructure to specified file in JSON format`,
 	Run: func(cmd *cobra.Command, args []string) {
 		vpcs, err := vpcs.GetVpcsList(ProjectID, 0, "")
 		if err != nil {
@@ -34,7 +34,7 @@ var dumpCmd = &cobra.Command{
 			fmt.Print(err)
 			return
 		}
-		eips, err := eip.GetEIPsList(ProjectID, 0, "")
+		eips, err := eip.GetEIPsList(ProjectID, 1000, "")
 		if err != nil {
 			fmt.Print(err)
 			return

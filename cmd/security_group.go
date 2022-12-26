@@ -11,10 +11,9 @@ import (
 
 var sgCmd = &cobra.Command{
 	Use:   "sg",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Commands to interact with security groups",
+	Long:  `Commands to interact with security groups`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("eip called")
 	},
 }
 
@@ -22,10 +21,8 @@ var sgCreateName string
 var sgCreateVpcID string
 var sgCreateCmd = &cobra.Command{
 	Use:   "create",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "Create security group",
+	Long:  `Create security group`,
 	Run: func(cmd *cobra.Command, args []string) {
 		sg, err := securityGroup.CreateSecurityGroup(ProjectID, sgCreateName)
 		if err != nil {
@@ -40,10 +37,8 @@ var sgGetInfoSGID string
 var sgGetInfoName string
 var sgGetInfoCmd = &cobra.Command{
 	Use:   "info",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "Get info about security group",
+	Long:  `Get info about security group`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		var sg *securityGroupModels.SecurityGroupModel
@@ -67,8 +62,8 @@ var sgGetListMarker string
 var sgGetListVpcID string
 var sgGetListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Get list of security groups",
+	Long:  `Get list of security groups`,
 	Run: func(cmd *cobra.Command, args []string) {
 		sgs, err := securityGroup.GetSecurityGroupsList(ProjectID, sgGetListLimit, sgGetListMarker, sgGetListVpcID)
 		if err != nil {
@@ -83,8 +78,8 @@ var sgDeleteSGID string
 var sgDeleteName string
 var sgDeleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Delete security group",
+	Long:  `Delete security group`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		if sgDeleteSGID != "" {
@@ -113,10 +108,8 @@ var sgAddRulePortRangeMin int
 var sgAddRulePortRangeMax int
 var sgCmdAddRule = &cobra.Command{
 	Use:   "add-rule",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "Add rule to security group",
+	Long:  `Add rule to security group`,
 	Run: func(cmd *cobra.Command, args []string) {
 		sgRule, err := securityGroup.CreateSecurityGroupRule(ProjectID, sgAddRuleSGID, sgAddRuleDescription, sgAddRuleDirection, sgAddRuleEtherType,
 			sgAddRuleProtocol, sgAddRulePortRangeMin, sgAddRulePortRangeMax, sgAddRuleRemoteIpPrefix, sgAddRuleRemoteGroupId)
@@ -131,10 +124,8 @@ here`,
 var sgRuleGetInfoRuleID string
 var sgRuleGetInfoCmd = &cobra.Command{
 	Use:   "rule-info",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "Get info about security group rule",
+	Long:  `Get info about security group rule`,
 	Run: func(cmd *cobra.Command, args []string) {
 		sgRule, err := securityGroup.GetInfoAboutSecurityGroupRule(ProjectID, sgRuleGetInfoRuleID)
 		if err != nil {
@@ -151,10 +142,8 @@ var sgRuleListSGID string
 var sgRuleListSGName string
 var sgRuleListCmd = &cobra.Command{
 	Use:   "rule-list",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "Get list of security rules",
+	Long:  `Get list of security rules`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		var rulesList []securityGroupModels.SecurityGroupRuleModel
@@ -176,12 +165,10 @@ here`,
 var sgRuleDeleteRuleID string
 var sgRuleDeleteCmd = &cobra.Command{
 	Use:   "rule-delete",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "Delete security rule",
+	Long:  `Delete security rule`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("eip called")
+
 	},
 }
 
@@ -198,35 +185,35 @@ func init() {
 	sgCmd.AddCommand(sgRuleListCmd)
 	sgCmd.AddCommand(sgRuleDeleteCmd)
 
-	sgCreateCmd.Flags().StringVarP(&sgCreateName, "name", "n", "", "")
-	sgCreateCmd.Flags().StringVarP(&sgCreateVpcID, "vpc", "v", "", "")
+	sgCreateCmd.Flags().StringVarP(&sgCreateName, "name", "n", "", "Specifies Security Group name")
+	sgCreateCmd.Flags().StringVarP(&sgCreateVpcID, "vpc", "v", "", "Specifies VPC ID")
 
-	sgGetInfoCmd.Flags().StringVarP(&sgGetInfoSGID, "id", "i", "", "")
-	sgGetInfoCmd.Flags().StringVarP(&sgGetInfoName, "name", "n", "", "")
+	sgGetInfoCmd.Flags().StringVarP(&sgGetInfoSGID, "id", "i", "", "Specifies Security Group ID")
+	sgGetInfoCmd.Flags().StringVarP(&sgGetInfoName, "name", "n", "", "Specifies Security Group name")
 
-	sgGetListCmd.Flags().IntVarP(&sgGetListLimit, "limit", "l", 0, "")
-	sgGetListCmd.Flags().StringVarP(&sgGetListMarker, "marker", "m", "", "")
-	sgGetListCmd.Flags().StringVarP(&sgGetListVpcID, "vpc_id", "v", "", "")
+	sgGetListCmd.Flags().IntVarP(&sgGetListLimit, "limit", "l", 0, "Specifies the number of records that will be returned on each page. The value is from 0 to intmax.")
+	sgGetListCmd.Flags().StringVarP(&sgGetListMarker, "marker", "m", "", "Specifies a resource ID for pagination query, indicating that the query starts from the next record of the specified resource ID.")
+	sgGetListCmd.Flags().StringVarP(&sgGetListVpcID, "vpc_id", "v", "", "Specifies VPC ID")
 
-	sgDeleteCmd.Flags().StringVarP(&sgDeleteName, "name", "n", "", "")
-	sgDeleteCmd.Flags().StringVarP(&sgDeleteSGID, "id", "i", "", "")
+	sgDeleteCmd.Flags().StringVarP(&sgDeleteName, "name", "n", "", "Specifies Security Group name")
+	sgDeleteCmd.Flags().StringVarP(&sgDeleteSGID, "id", "i", "", "Specifies Security Group ID")
 
-	sgCmdAddRule.Flags().StringVar(&sgAddRuleSGID, "sg-id", "", "")
-	sgCmdAddRule.Flags().StringVar(&sgAddRuleDescription, "desc", "", "")
-	sgCmdAddRule.Flags().StringVar(&sgAddRuleDirection, "direction", "", "")
-	sgCmdAddRule.Flags().StringVar(&sgAddRuleEtherType, "ethertype", "", "")
-	sgCmdAddRule.Flags().StringVar(&sgAddRuleProtocol, "protocol", "", "")
-	sgCmdAddRule.Flags().StringVar(&sgAddRuleRemoteIpPrefix, "remote_ip_prefix", "", "")
-	sgCmdAddRule.Flags().StringVar(&sgAddRuleRemoteGroupId, "remote_group_id", "", "")
-	sgCmdAddRule.Flags().IntVar(&sgAddRulePortRangeMin, "port_min", 1, "")
-	sgCmdAddRule.Flags().IntVar(&sgAddRulePortRangeMax, "port_max", 65535, "")
+	sgCmdAddRule.Flags().StringVar(&sgAddRuleSGID, "sg-id", "", "Specifies Security Group ID")
+	sgCmdAddRule.Flags().StringVar(&sgAddRuleDescription, "desc", "", "Provides supplementary information about the security group rule.")
+	sgCmdAddRule.Flags().StringVar(&sgAddRuleDirection, "direction", "", "The value can be: egress or ingress")
+	sgCmdAddRule.Flags().StringVar(&sgAddRuleEtherType, "ethertype", "", "Specifies the IP protocol version. The value can be IPv4 or IPv6. If you do not set this parameter, IPv4 is used by default.")
+	sgCmdAddRule.Flags().StringVar(&sgAddRuleProtocol, "protocol", "", "Specifies the protocol type. The value can be icmpv6, tcp, udp, icmp or an IP protocol number (0 to 255). If the parameter is left blank, all protocols are supported. When the protocol is icmpv6, IP protocol version should be IPv6. When the protocol is icmp, IP protocol version should be IPv4.")
+	sgCmdAddRule.Flags().StringVar(&sgAddRuleRemoteIpPrefix, "remote_ip_prefix", "", "Specifies the remote IP address. If the access control direction is set to egress, the parameter specifies the source IP address. If the access control direction is set to ingress, the parameter specifies the destination IP address. The value can be in the CIDR format or IP addresses. The parameter is exclusive with parameter remote_group_id.")
+	sgCmdAddRule.Flags().StringVar(&sgAddRuleRemoteGroupId, "remote_group_id", "", "Specifies the ID of the peer security group. The value is exclusive with parameter remote_ip_prefix.")
+	sgCmdAddRule.Flags().IntVar(&sgAddRulePortRangeMin, "port_min", 1, "Specifies the start port number. The value ranges from 1 to 65535.The value cannot be greater than the port_range_max value. An empty value indicates all ports. If the protocol is icmp, the value range is shown in ICMP-Port Range Relationship Table.")
+	sgCmdAddRule.Flags().IntVar(&sgAddRulePortRangeMax, "port_max", 65535, "Specifies the end port number. The value ranges from 1 to 65535. If the protocol is not icmp, the value cannot be smaller than the port_range_min value. An empty value indicates all ports. If the protocol is icmp, the value range is shown in ICMP-Port Range Relationship Table.")
 
-	sgRuleGetInfoCmd.Flags().StringVarP(&sgRuleGetInfoRuleID, "id", "i", "", "")
+	sgRuleGetInfoCmd.Flags().StringVarP(&sgRuleGetInfoRuleID, "id", "i", "", "Specifies the Security Group ID")
 
-	sgRuleListCmd.Flags().StringVarP(&sgRuleListSGID, "id", "i", "", "")
-	sgRuleListCmd.Flags().StringVarP(&sgRuleListSGName, "name", "n", "", "")
-	sgRuleListCmd.Flags().StringVarP(&sgRuleListMarker, "marker", "m", "", "")
-	sgRuleListCmd.Flags().IntVarP(&sgRuleListLimit, "limit", "l", 0, "")
+	sgRuleListCmd.Flags().StringVarP(&sgRuleListSGID, "id", "i", "", "Specifies the Security Group ID")
+	sgRuleListCmd.Flags().StringVarP(&sgRuleListSGName, "name", "n", "", "Specifies the Security Group name")
+	sgRuleListCmd.Flags().StringVarP(&sgRuleListMarker, "marker", "m", "", "Specifies a resource ID for pagination query, indicating that the query starts from the next record of the specified resource ID.")
+	sgRuleListCmd.Flags().IntVarP(&sgRuleListLimit, "limit", "l", 0, "Specifies the number of records that will be returned on each page. The value is from 0 to intmax.")
 
-	sgRuleDeleteCmd.Flags().StringVarP(&sgRuleDeleteRuleID, "id", "i", "", "")
+	sgRuleDeleteCmd.Flags().StringVarP(&sgRuleDeleteRuleID, "id", "i", "", "Specifies the Security Group ID")
 }

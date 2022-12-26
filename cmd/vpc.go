@@ -1,7 +1,3 @@
-/*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
@@ -26,24 +22,19 @@ var deleteName string
 var deleteID string
 var vpcDeleteIsRecursive bool
 
-// vpcCmd represents the vpc command
 var vpcCmd = &cobra.Command{
 	Use:   "vpc",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "Command to interact with VPC",
+	Long:  `Command to interact with VPC`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("vpc called")
 	},
 }
 
 var vpcCreateCmd = &cobra.Command{
 	Use:   "create",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Create VPC",
+	Long:  `Create VPC`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("vpc create called")
 		vpc, err := vpcs.CreateVpc(ProjectID, createName, createDescription, createCidr)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
@@ -55,10 +46,9 @@ var vpcCreateCmd = &cobra.Command{
 
 var vpcGetListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Get list of VPC",
+	Long:  `Get list of VPC`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("vpc list called")
 		vpcs, err := vpcs.GetVpcsList(ProjectID, listLimit, listMarker)
 		if err != nil {
 			fmt.Printf("ERROR: %s\n", err.Error())
@@ -70,10 +60,9 @@ var vpcGetListCmd = &cobra.Command{
 
 var vpcGetInfoCmd = &cobra.Command{
 	Use:   "info",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Get info about VPC",
+	Long:  `Get info about VPC`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("vpc info called")
 		var vpc *vpcModels.VpcModel
 		var err error
 		if infoVpcID != "" {
@@ -89,10 +78,28 @@ var vpcGetInfoCmd = &cobra.Command{
 	},
 }
 
+var vpcUpdateVpcId string
+var vpcUpdateVpcDesc string
+var vpcUpdateVpcName string
+var vpcUpdateVpcCidr string
+var vpcUpdateCmd = &cobra.Command{
+	Use:   "update",
+	Short: "Update VPC",
+	Long:  `Update VPC`,
+	Run: func(cmd *cobra.Command, args []string) {
+		vpc, err := vpcs.UpdateVpc(ProjectID, vpcUpdateVpcId, vpcUpdateVpcName, vpcUpdateVpcDesc, vpcUpdateVpcCidr)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(vpc, jmesPathQuery)
+		}
+	},
+}
+
 var vpcDeleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Delete VPC",
+	Long:  `Delete VPC`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if vpcDeleteIsRecursive {
 			var vpcID string
@@ -137,22 +144,28 @@ func init() {
 	vpcCmd.PersistentFlags().StringVarP(&jmesPathQuery, "query", "q", "", "JMES Path query")
 
 	vpcCmd.AddCommand(vpcCreateCmd)
-	vpcCreateCmd.Flags().StringVarP(&createName, "name", "n", "", "add details here")
-	vpcCreateCmd.Flags().StringVarP(&createCidr, "cidr", "c", "", "add details here")
-	vpcCreateCmd.Flags().StringVarP(&createDescription, "description", "d", "", "add details here")
+	vpcCreateCmd.Flags().StringVarP(&createName, "name", "n", "", "Specifies the VPC name")
+	vpcCreateCmd.Flags().StringVarP(&createCidr, "cidr", "c", "192.168.0.0/16", "Specifies the available IP address ranges for subnets in the VPC. Possible values are as follows: 10.0.0.0/8-24, 172.16.0.0/12-24, 192.168.0.0/16-24")
+	vpcCreateCmd.Flags().StringVarP(&createDescription, "description", "d", "", "Provides supplementary information about the VPC")
 
 	vpcCmd.AddCommand(vpcGetListCmd)
-	vpcGetListCmd.Flags().IntVarP(&listLimit, "limit", "l", 0, "add details here")
-	vpcGetListCmd.Flags().StringVarP(&listMarker, "marker", "m", "", "add details here")
+	vpcGetListCmd.Flags().IntVarP(&listLimit, "limit", "l", 0, "Specifies the number of records that will be returned on each page. The value is from 0 to intmax.")
+	vpcGetListCmd.Flags().StringVarP(&listMarker, "marker", "m", "", "Specifies a resource ID for pagination query, indicating that the query starts from the next record of the specified resource ID.")
 
 	vpcCmd.AddCommand(vpcGetInfoCmd)
-	vpcGetInfoCmd.Flags().StringVarP(&infoName, "name", "n", "", "add details here")
-	vpcGetInfoCmd.Flags().StringVarP(&infoVpcID, "id", "i", "", "add details here")
+	vpcGetInfoCmd.Flags().StringVarP(&infoName, "name", "n", "", "Specifies the VPC name, which uniquely identifies the VPC.")
+	vpcGetInfoCmd.Flags().StringVarP(&infoVpcID, "id", "i", "", "Specifies the VPC ID, which uniquely identifies the VPC.")
+
+	vpcCmd.AddCommand(vpcUpdateCmd)
+	vpcUpdateCmd.Flags().StringVarP(&vpcUpdateVpcId, "id", "i", "", "Specifies the VPC ID, which uniquely identifies the VPC.")
+	vpcUpdateCmd.Flags().StringVarP(&vpcUpdateVpcName, "name", "n", "", "Specifies the VPC name, which uniquely identifies the VPC.")
+	vpcUpdateCmd.Flags().StringVarP(&vpcUpdateVpcCidr, "cidr", "c", "", "Specifies the available IP address ranges for subnets in the VPC. Possible values are as follows: 10.0.0.0/8-24, 172.16.0.0/12-24, 192.168.0.0/16-24")
+	vpcUpdateCmd.Flags().StringVarP(&vpcUpdateVpcDesc, "desc", "d", "", "Provides supplementary information about the VPC.")
 
 	vpcCmd.AddCommand(vpcDeleteCmd)
-	vpcDeleteCmd.Flags().StringVarP(&deleteName, "name", "n", "", "add details here")
-	vpcDeleteCmd.Flags().StringVarP(&deleteID, "id", "i", "", "add details here")
-	vpcDeleteCmd.Flags().BoolVarP(&vpcDeleteIsRecursive, "rec", "r", false, "add details here")
+	vpcDeleteCmd.Flags().StringVarP(&deleteName, "name", "n", "", "Specifies the VPC name, which uniquely identifies the VPC.")
+	vpcDeleteCmd.Flags().StringVarP(&deleteID, "id", "i", "", "Specifies the VPC ID, which uniquely identifies the VPC.")
+	vpcDeleteCmd.Flags().BoolVarP(&vpcDeleteIsRecursive, "rec", "r", false, "Specifies recursive delete flag")
 }
 
 //todo: Add "vpc-" prefix to every flag variable

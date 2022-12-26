@@ -7,7 +7,7 @@ type EipModel struct {
 	Status              string `json:"status"`
 	TenantID            string `json:"tenant_id"`
 	CreateTime          string `json:"create_time"`
-	BandwidthSize       string `json:"bandwidth_size"`
+	BandwidthSize       int    `json:"bandwidth_size"`
 	EnterpriseProjectID string `json:"enterprise_project_id"`
 	IPVersion           int    `json:"ip_version"`
 	PrivateIP           string `json:"private_ip_address"`

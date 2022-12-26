@@ -8,8 +8,8 @@ import (
 
 var configureCmd = &cobra.Command{
 	Use:   "configure",
-	Short: "",
-	Long:  ``,
+	Short: "configure application",
+	Long:  `configure application, set auth, output, endpoint parameters`,
 	Run: func(cmd *cobra.Command, args []string) {
 		keys := []string{"ACCESS_KEY", "SECRET_KEY", "PROJECT_ID", "OUTPUT_FORMAT"}
 		config := make(map[string]string, len(keys))

@@ -10,10 +10,8 @@ import (
 
 var eipCmd = &cobra.Command{
 	Use:   "eip",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "commands to interact with Elastic IPs",
+	Long:  `commands to interact with Elastic IPs`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("eip called")
 	},
@@ -27,10 +25,8 @@ var eipAssignBandwidthShareType string
 
 var eipCmdAssign = &cobra.Command{
 	Use:   "assign",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "Assign Elastic IP",
+	Long:  `Assign Elastic IP`,
 	Run: func(cmd *cobra.Command, args []string) {
 		eip, err := eip.AssignEIP(ProjectID, eipAssignPublicIPType, eipAssignPublicIPVersion, eipAssignBandwidthName, eipAssignBandwidthSize, eipAssignBandwidthShareType)
 		if err != nil {
@@ -45,10 +41,8 @@ var eipReleasePublicIpID string
 var eipReleasePublicIp string
 var eipCmdRelease = &cobra.Command{
 	Use:   "release",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "Release Elastic IP",
+	Long:  `Release Elastic IP`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		if eipReleasePublicIpID != "" {
@@ -70,10 +64,8 @@ var eipCmdGetInfoAddress string
 var eipCmdGetInfoPublicIpID string
 var eipCmdGetInfo = &cobra.Command{
 	Use:   "info",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "Get info about Elastic IP you choose",
+	Long:  `Get info about Elastic IP you choose`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var eipEntity *eipModels.EipModel
 		var err error
@@ -96,10 +88,8 @@ var eipCmdListLimit int
 var eipCmdListMarker string
 var eipCmdList = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "Get list of Elastic IPs",
+	Long:  `Get list of Elastic IPs`,
 	Run: func(cmd *cobra.Command, args []string) {
 		eips, err := eip.GetEIPsList(ProjectID, eipCmdListLimit, eipCmdListMarker)
 		if err != nil {
@@ -119,20 +109,20 @@ func init() {
 	eipCmd.AddCommand(eipCmdGetInfo)
 	eipCmd.AddCommand(eipCmdList)
 
-	eipCmdAssign.Flags().StringVar(&eipAssignPublicIPType, "eip-type", "5_bgp", "add details here")
-	eipCmdAssign.Flags().IntVar(&eipAssignPublicIPVersion, "ip-version", 4, "add details here")
-	eipCmdAssign.Flags().StringVarP(&eipAssignBandwidthName, "bandwidth-name", "b", "", "")
-	eipCmdAssign.Flags().IntVar(&eipAssignBandwidthSize, "bandwidth-size", 0, "")
-	eipCmdAssign.Flags().StringVar(&eipAssignBandwidthShareType, "bandwidth-share-type", "", "")
+	eipCmdAssign.Flags().StringVar(&eipAssignPublicIPType, "eip-type", "5_bgp", "Specifies Type of EIP. The value can be 5_bgp, default is 5_bgp")
+	eipCmdAssign.Flags().IntVar(&eipAssignPublicIPVersion, "ip-version", 4, "Specifies Version of IP. The value can be 4 or 6, default is 4.")
+	eipCmdAssign.Flags().StringVarP(&eipAssignBandwidthName, "bandwidth-name", "b", "", "Specifies Bandwidth name. The value is a string of 1 to 64 characters that can contain letters, digits, underscores (_), hyphens (-), and periods (.). This parameter is mandatory when share_type is set to PER. This parameter will be ignored when share_type is set to WHOLE with an ID specified.")
+	eipCmdAssign.Flags().IntVar(&eipAssignBandwidthSize, "bandwidth-size", 0, "Specifies the bandwidth size. The value ranges from 1 Mbit/s to 300 Mbit/s by default. (The specific range may vary depending on the configuration in each region. You can see the bandwidth range of each region on the management console.) This parameter is mandatory when share_type is set to PER. This parameter will be ignored when share_type is set to WHOLE with an ID specified.")
+	eipCmdAssign.Flags().StringVar(&eipAssignBandwidthShareType, "bandwidth-share-type", "", "Specifies the bandwidth type. Possible values are PER (Dedicated bandwidth) and WHOLE (Shared bandwidth). If this parameter is set to WHOLE, the bandwidth ID must be specified")
 
-	eipCmdRelease.Flags().StringVarP(&eipReleasePublicIpID, "id", "i", "", "")
-	eipCmdRelease.Flags().StringVarP(&eipReleasePublicIp, "address", "a", "", "")
+	eipCmdRelease.Flags().StringVarP(&eipReleasePublicIpID, "id", "i", "", "Specifies ID of IP to release")
+	eipCmdRelease.Flags().StringVarP(&eipReleasePublicIp, "address", "a", "", "Specifies IP address to release")
 
-	eipCmdList.Flags().IntVarP(&eipCmdListLimit, "limit", "l", 0, "")
-	eipCmdList.Flags().StringVarP(&eipCmdListMarker, "marker", "m", "", "")
+	eipCmdList.Flags().IntVarP(&eipCmdListLimit, "limit", "l", 1000, "Specifies the number of records returned on each page")
+	eipCmdList.Flags().StringVarP(&eipCmdListMarker, "marker", "m", "", "Specifies the start resource ID of pagination query. If the parameter is left blank, only resources on the first page are queried.")
 
-	eipCmdGetInfo.Flags().StringVarP(&eipCmdGetInfoAddress, "address", "a", "", "")
-	eipCmdGetInfo.Flags().StringVarP(&eipCmdGetInfoPublicIpID, "id", "i", "", "")
+	eipCmdGetInfo.Flags().StringVarP(&eipCmdGetInfoAddress, "address", "a", "", "Specifies IP address of EIP")
+	eipCmdGetInfo.Flags().StringVarP(&eipCmdGetInfoPublicIpID, "id", "i", "", "Specifies ID of EIP")
 }
 
 //todo: вынести значения по умолчанию в константы

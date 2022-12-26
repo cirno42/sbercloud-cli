@@ -8,8 +8,6 @@ import (
 	"sbercloud-cli/internal/handlers/requestMakers"
 )
 
-const expectedStatusCode = 200
-
 type vpcCreationParameters struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`

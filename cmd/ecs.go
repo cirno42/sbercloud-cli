@@ -9,10 +9,8 @@ import (
 
 var ecsCmd = &cobra.Command{
 	Use:   "ecs",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "commands to interact with ECS instances",
+	Long:  `commands to interact with ECS instances`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("esc called")
 	},
@@ -21,10 +19,8 @@ here`,
 var ecsFlavorListAvailabilityZone string
 var ecsFlavorListCmd = &cobra.Command{
 	Use:   "flavor-list",
-	Short: "A brief description of your command",
-	Long: `add
-details
-here`,
+	Short: "Get flavor list",
+	Long:  `Get flavor list`,
 	Run: func(cmd *cobra.Command, args []string) {
 		flavors, err := ecs.GetESCFlavorList(ProjectID, ecsFlavorListAvailabilityZone)
 		if err != nil {
