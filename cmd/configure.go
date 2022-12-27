@@ -11,10 +11,11 @@ var configureCmd = &cobra.Command{
 	Short: "configure application",
 	Long:  `configure application, set auth, output, endpoint parameters`,
 	Run: func(cmd *cobra.Command, args []string) {
-		keys := []string{"ACCESS_KEY", "SECRET_KEY", "PROJECT_ID", "OUTPUT_FORMAT"}
+		keys := []string{"ACCESS_KEY", "SECRET_KEY", "PROJECT_ID", "OUTPUT_FORMAT", "REGION"}
 		config := make(map[string]string, len(keys))
 		var value string
 		fmt.Println("Available values for OUTPUT_FORMAT: YAML/JSON")
+		fmt.Println("Available values for REGION: Ru-Moscow")
 		for _, key := range keys {
 			fmt.Print(key, "=")
 			_, err := fmt.Scanln(&value)

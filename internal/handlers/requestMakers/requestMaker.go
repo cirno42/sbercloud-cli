@@ -115,7 +115,9 @@ func CreateAndDoRequest(URL string, method httpMethodType, requestBody interface
 		return err
 	}
 	if isHttpRequestSuccess(resp) {
-		err = parseResponseBody(resp, &parsedResponseBodyPointer)
+		if resp.StatusCode != 204 {
+			err = parseResponseBody(resp, &parsedResponseBodyPointer)
+		}
 		return err
 	} else {
 		err = parseResponseBody(resp, &parsedErrorPointer)
