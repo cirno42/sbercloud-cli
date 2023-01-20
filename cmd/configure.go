@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
+	"runtime"
 )
 
 var configureCmd = &cobra.Command{
@@ -14,7 +15,12 @@ var configureCmd = &cobra.Command{
 		keys := []string{"ACCESS_KEY", "SECRET_KEY", "PROJECT_ID", "OUTPUT_FORMAT", "REGION"}
 		config := make(map[string]string, len(keys))
 		var value string
-		fmt.Println("Available values for OUTPUT_FORMAT: YAML/JSON")
+		if runtime.GOOS == "windows" {
+			fmt.Println("Available values for OUTPUT_FORMAT: YAML/JSON/TABLE")
+		} else if runtime.GOOS == "linux" {
+			fmt.Println("Available values for OUTPUT_FORMAT: YAML/JSON/JSON-C/TABLE")
+		}
+		fmt.Println("Available values for OUTPUT_FORMAT: YAML/JSON/TABLE")
 		fmt.Println("Available values for REGION: Ru-Moscow")
 		for _, key := range keys {
 			fmt.Print(key, "=")

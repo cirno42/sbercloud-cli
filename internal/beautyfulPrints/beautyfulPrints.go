@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/hokaccha/go-prettyjson"
 	"github.com/jmespath/go-jmespath"
+	"github.com/lensesio/tableprinter"
 	"gopkg.in/yaml.v2"
 	"os"
 	"strings"
@@ -26,6 +27,8 @@ func PrintStruct(s interface{}, jmesPathQuery string) {
 		printStructAsJson(s)
 	} else if format == "JSON-C" {
 		printStructAsJsonColor(s)
+	} else if format == "TABLE" {
+		printStructAsTable(s)
 	} else {
 		fmt.Println("Output format is not configured!")
 	}
@@ -47,6 +50,10 @@ func printStructAsJson(s interface{}) {
 		return
 	}
 	fmt.Print(string(output))
+}
+
+func printStructAsTable(s interface{}) {
+	tableprinter.Print(os.Stdout, s)
 }
 
 func printStructAsJsonColor(s interface{}) {

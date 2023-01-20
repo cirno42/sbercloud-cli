@@ -1,11 +1,11 @@
 package securityGroupModels
 
 type SecurityGroupModel struct {
-	Name               string                   `json:"name"`
-	Description        string                   `json:"description"`
-	Id                 string                   `json:"id"`
-	VpcID              string                   `json:"vpc_id"`
-	SecurityGroupRules []SecurityGroupRuleModel `json:"security_group_rules"`
+	Name               string                   `json:"name" header:"name"`
+	Description        string                   `json:"description" header:"description"`
+	Id                 string                   `json:"id" header:"id"`
+	VpcID              string                   `json:"vpc_id" header:"vpc_id"`
+	SecurityGroupRules []SecurityGroupRuleModel `json:"security_group_rules" header:"security_group_rules"`
 }
 
 type SecurityGroupRuleModel struct {
