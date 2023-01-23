@@ -2,6 +2,82 @@ package ecsModels
 
 import "time"
 
+type ECSModel struct {
+	Fault struct {
+		Message string `json:"message"`
+		Code    int    `json:"code"`
+		Details string `json:"details"`
+		Created string `json:"created"`
+	} `json:"fault"`
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Flavor struct {
+		Disk  string `json:"disk"`
+		Vcpus string `json:"vcpus"`
+		RAM   string `json:"ram"`
+		ID    string `json:"id"`
+		Name  string `json:"name"`
+	} `json:"flavor"`
+	AccessIPv4 string `json:"accessIPv4"`
+	AccessIPv6 string `json:"accessIPv6"`
+	Status     string `json:"status"`
+	Image      struct {
+		ID string `json:"id"`
+	} `json:"image"`
+	HostID   string    `json:"hostId"`
+	Updated  time.Time `json:"updated"`
+	Created  time.Time `json:"created"`
+	Metadata struct {
+		MeteringImageID          string `json:"metering.image_id"`
+		MeteringImagetype        string `json:"metering.imagetype"`
+		MeteringResourcespeccode string `json:"metering.resourcespeccode"`
+		ImageName                string `json:"image_name"`
+		MeteringResourcetype     string `json:"metering.resourcetype"`
+		OsBit                    string `json:"os_bit"`
+		VpcID                    string `json:"vpc_id"`
+		OsType                   string `json:"os_type"`
+		ChargingMode             string `json:"charging_mode"`
+	} `json:"metadata"`
+	Tags                             []interface{} `json:"tags"`
+	Description                      string        `json:"description"`
+	Locked                           bool          `json:"locked"`
+	ConfigDrive                      string        `json:"config_drive"`
+	TenantID                         string        `json:"tenant_id"`
+	UserID                           string        `json:"user_id"`
+	OsExtendedVolumesVolumesAttached []struct {
+		Device              string `json:"device"`
+		BootIndex           string `json:"bootIndex"`
+		ID                  string `json:"id"`
+		DeleteOnTermination string `json:"delete_on_termination"`
+	} `json:"os-extended-volumes:volumes_attached"`
+	OSEXTSTSTaskState              interface{} `json:"OS-EXT-STS:task_state"`
+	OSEXTSTSPowerState             int         `json:"OS-EXT-STS:power_state"`
+	OSEXTSTSVMState                string      `json:"OS-EXT-STS:vm_state"`
+	OSEXTSRVATTRHost               string      `json:"OS-EXT-SRV-ATTR:host"`
+	OSEXTSRVATTRInstanceName       string      `json:"OS-EXT-SRV-ATTR:instance_name"`
+	OSEXTSRVATTRHypervisorHostname string      `json:"OS-EXT-SRV-ATTR:hypervisor_hostname"`
+	OSDCFDiskConfig                string      `json:"OS-DCF:diskConfig"`
+	OSEXTAZAvailabilityZone        string      `json:"OS-EXT-AZ:availability_zone"`
+	OsSchedulerHints               struct {
+	} `json:"os:scheduler_hints"`
+	OSEXTSRVATTRRootDeviceName string `json:"OS-EXT-SRV-ATTR:root_device_name"`
+	OSEXTSRVATTRRamdiskID      string `json:"OS-EXT-SRV-ATTR:ramdisk_id"`
+	OSEXTSRVATTRUserData       string `json:"OS-EXT-SRV-ATTR:user_data"`
+	OSSRVUSGLaunchedAt         string `json:"OS-SRV-USG:launched_at"`
+	OSEXTSRVATTRKernelID       string `json:"OS-EXT-SRV-ATTR:kernel_id"`
+	OSEXTSRVATTRLaunchIndex    int    `json:"OS-EXT-SRV-ATTR:launch_index"`
+	HostStatus                 string `json:"host_status"`
+	OSEXTSRVATTRReservationID  string `json:"OS-EXT-SRV-ATTR:reservation_id"`
+	OSEXTSRVATTRHostname       string `json:"OS-EXT-SRV-ATTR:hostname"`
+	SysTags                    []struct {
+		Key   string `json:"key"`
+		Value string `json:"value"`
+	} `json:"sys_tags"`
+	SecurityGroups []struct {
+		Name string `json:"name"`
+	} `json:"security_groups"`
+}
+
 type FlavorModel struct {
 	ID    string `json:"id"`
 	Name  string `json:"name"`
