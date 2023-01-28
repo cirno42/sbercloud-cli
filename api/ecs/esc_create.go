@@ -67,7 +67,7 @@ type ecsCreateParameters struct {
 	ServerTags       []serverTag  `json:"server_tags"`
 }
 
-func CreateECS(projectID, vpcID, imageRef, name, flavorRef, rootVolumeType, eipId, eipType, bandwidthType string,
+func CreateECS(projectID, vpcID, imageRef, name, flavorRef, rootVolumeType, availabilityZone, eipId, eipType, bandwidthType string,
 	bandwidthSize int, dataVolumesTypes, subnetIds []string, secGroupIds []string, dataVolumesSizes []int, adminPass string, rootVolumeSize, count int) (*ecsModels.ESCJobID, error) {
 
 	endpoint := fmt.Sprintf("https://ecs.ru-moscow-1.hc.sbercloud.ru/v1/%s/cloudservers", projectID)
@@ -96,7 +96,7 @@ func CreateECS(projectID, vpcID, imageRef, name, flavorRef, rootVolumeType, eipI
 		dv[i].Volumetype = dataVolumesTypes[i]
 	}
 	ecsRequest := escCreateRequest{Server: ecsCreateParameters{
-		AvailabilityZone: "",
+		AvailabilityZone: availabilityZone,
 		Name:             name,
 		ImageRef:         imageRef,
 		RootVolume:       rv,

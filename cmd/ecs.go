@@ -12,7 +12,6 @@ var ecsCmd = &cobra.Command{
 	Short: "commands to interact with ECS instances",
 	Long:  `commands to interact with ECS instances`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("esc called")
 	},
 }
 
@@ -93,13 +92,14 @@ var ecsCreateEipType string
 var ecsCreateVolumeTypes []string
 var ecsCreateVolumeSizes []int
 var ecsCreateRootVolumeSize int
+var ecsCreateAvailabilityZone string
 var ecsCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Delete ECS",
 	Long:  `Delete ECS`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ecs, err := ecs.CreateECS(ProjectID, ecsCreateVpcID, ecsCreateImageRef, ecsCreateName, ecsCreateFlavorRef,
-			ecsCreateRootVolumeType, ecsCreateEipId, ecsCreateEipType, ecsCreateEipBandwidthType, ecsCreateEipBandwidthSize, ecsCreateVolumeTypes,
+			ecsCreateRootVolumeType, ecsCreateAvailabilityZone, ecsCreateEipId, ecsCreateEipType, ecsCreateEipBandwidthType, ecsCreateEipBandwidthSize, ecsCreateVolumeTypes,
 			ecsCreateSubnetIds, ecsCreateSecGroupIds, ecsCreateVolumeSizes, ecsCreateAdminPass, ecsCreateRootVolumeSize, ecsCreateCount)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
@@ -188,6 +188,38 @@ var ecsBatchDeleteNicsCmd = &cobra.Command{
 	},
 }
 
+var ecsJobId string
+var jobInfoCmd = &cobra.Command{
+	Use:   "job-info",
+	Short: "This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time",
+	Long:  `This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time`,
+	Run: func(cmd *cobra.Command, args []string) {
+		job, err := ecs.GetInfoAboutTask(ProjectID, ecsJobId)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(job, jmesPathQuery)
+		}
+	},
+}
+
+var ecsAttachDiskVolumeId string
+var ecsAttachDiskEcsId string
+var ecsAttachDiskDevice string
+var ecsAttachDiskCmd = &cobra.Command{
+	Use:   "attach-disk",
+	Short: "This command is used to attach a disk to an ECS.",
+	Long:  `This command is used to attach a disk to an ECS.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		job, err := ecs.AttachDiskEcs(ProjectID, ecsAttachDiskEcsId, ecsAttachDiskVolumeId, ecsAttachDiskDevice)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(job, jmesPathQuery)
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(ecsCmd)
 	ecsCmd.PersistentFlags().StringVarP(&jmesPathQuery, "query", "q", "", "JMES Path query")
@@ -202,6 +234,8 @@ func init() {
 	ecsCmd.AddCommand(ecsBatchStopCmd)
 	ecsCmd.AddCommand(ecsBatchAddNicsCmd)
 	ecsCmd.AddCommand(ecsBatchDeleteNicsCmd)
+	ecsCmd.AddCommand(jobInfoCmd)
+	ecsCmd.AddCommand(ecsAttachDiskCmd)
 
 	ecsFlavorListCmd.Flags().StringVarP(&ecsFlavorListAvailabilityZone, "availability_zone", "a", "", "")
 
@@ -227,6 +261,7 @@ func init() {
 	ecsCreateCmd.Flags().IntSliceVar(&ecsCreateVolumeSizes, "data-volume-sizes", nil, "")
 	ecsCreateCmd.Flags().IntVar(&ecsCreateRootVolumeSize, "root-volume-size", 0, "Specifies the system disk size, in GB. The value ranges from 1 to 1024.")
 	ecsCreateCmd.Flags().IntVar(&ecsCreateCount, "count", 1, "")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateAvailabilityZone, "az", "", "")
 
 	ecsBatchStartCmd.Flags().StringSliceVarP(&ecsBatchStartServerIds, "id", "i", nil, "Specifies ECS IDs")
 
@@ -241,4 +276,11 @@ func init() {
 
 	ecsBatchDeleteNicsCmd.Flags().StringVarP(&ecsBatchDeleteNicsServerId, "id", "i", "", "Specifies ECS ID")
 	ecsBatchDeleteNicsCmd.Flags().StringSliceVarP(&ecsBatchDeleteNicsSubnetIds, "subnet-ids", "s", nil, "Specifies subnet IDs")
+
+	jobInfoCmd.Flags().StringVarP(&ecsJobId, "id", "i", "", "")
+
+	ecsAttachDiskCmd.Flags().StringVar(&ecsAttachDiskEcsId, "ecs-id", "", "Specifies ECS ID")
+	ecsAttachDiskCmd.Flags().StringVar(&ecsAttachDiskVolumeId, "vol-id", "s", "Specifies subnet IDs")
+	ecsAttachDiskCmd.Flags().StringVar(&ecsAttachDiskDevice, "device", "s", "Specifies subnet IDs")
+
 }
