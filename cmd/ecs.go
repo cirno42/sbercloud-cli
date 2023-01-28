@@ -85,14 +85,18 @@ var ecsCreateRootVolumeType string
 var ecsCreateSubnetIds []string
 var ecsCreateSecGroupIds []string
 var ecsCreateAdminPass string
+var ecsCreateEipId string
+var ecsCreateEipBandwidthSize int
+var ecsCreateEipBandwidthType string
 var ecsCreateCount int
+var ecsCreateEipType string
 var ecsCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Delete ECS",
 	Long:  `Delete ECS`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ecs, err := ecs.CreateECS(ProjectID, ecsCreateVpcID, ecsCreateImageRef, ecsCreateName, ecsCreateFlavorRef,
-			ecsCreateRootVolumeType, ecsCreateSubnetIds, ecsCreateSecGroupIds, ecsCreateAdminPass, ecsCreateCount)
+			ecsCreateRootVolumeType, ecsCreateEipId, ecsCreateEipType, ecsCreateEipBandwidthType, ecsCreateEipBandwidthSize, ecsCreateSubnetIds, ecsCreateSecGroupIds, ecsCreateAdminPass, ecsCreateCount)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
 		} else {
@@ -177,6 +181,11 @@ func init() {
 	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateSubnetIds, "subnet-ids", nil, "")
 	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateSecGroupIds, "sg-ids", nil, "")
 	ecsCreateCmd.Flags().StringVar(&ecsCreateAdminPass, "admin-pass", "", "")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateEipId, "eip-id", "", "")
+	ecsCreateCmd.Flags().IntVar(&ecsCreateEipBandwidthSize, "eip-size", 1, "Specifies the bandwidth size. Specifies the bandwidth (Mbit/s). The value ranges from 1 to 300.")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateEipBandwidthType, "eip-bandwidth", "", "Specifies the bandwidth sharing type. Enumerated values: PER (indicates exclusive bandwidth) and WHOLE (indicates sharing)")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateEipType, "eip-type", "5_bgp", "Specifies Type of EIP. The value can be 5_bgp, default is 5_bgp")
+
 	ecsCreateCmd.Flags().IntVar(&ecsCreateCount, "count", 1, "")
 
 	ecsBatchStartCmd.Flags().StringSliceVarP(&ecsBatchStartServerIds, "id", "i", nil, "Specifies ECS IDs")

@@ -36,7 +36,8 @@ type eip struct {
 }
 
 type publicIp struct {
-	Eip eip `json:"eip"`
+	Id  string `json:"id"`
+	Eip *eip   `json:"eip"`
 }
 
 type serverTag struct {
@@ -59,14 +60,14 @@ type ecsCreateParameters struct {
 	SecurityGroups   []secGroupId `json:"security_groups"`
 	Nics             []nic        `json:"nics"`
 	AdminPass        string       `json:"adminPass"`
-	//Publicip         publicIp     `json:"publicip"`
-	KeyName    string      `json:"key_name"`
-	Count      int         `json:"count"`
-	ServerTags []serverTag `json:"server_tags"`
+	Publicip         *publicIp    `json:"publicip"`
+	KeyName          string       `json:"key_name"`
+	Count            int          `json:"count"`
+	ServerTags       []serverTag  `json:"server_tags"`
 }
 
-func CreateECS(projectID, vpcID, imageRef, name, flavorRef, rootVolumeType string,
-	subnetIds []string, secGroupIds []string, adminPass string, count int) (*ecsModels.ESCJobID, error) {
+func CreateECS(projectID, vpcID, imageRef, name, flavorRef, rootVolumeType, eipId, eipType, bandwidthType string,
+	bandwidthSize int, subnetIds []string, secGroupIds []string, adminPass string, count int) (*ecsModels.ESCJobID, error) {
 
 	endpoint := fmt.Sprintf("https://ecs.ru-moscow-1.hc.sbercloud.ru/v1/%s/cloudservers", projectID)
 	rv := rootVolume{Volumetype: rootVolumeType}
@@ -78,12 +79,23 @@ func CreateECS(projectID, vpcID, imageRef, name, flavorRef, rootVolumeType strin
 	for i := 0; i < len(secGroupIds); i++ {
 		secGroups[i].ID = secGroupIds[i]
 	}
+	var ip *publicIp
+	if eipId != "" {
+		ip = &publicIp{Id: eipId}
+	} else if bandwidthType != "" {
+		bw := bandwidth{Size: bandwidthSize, Sharetype: bandwidthType}
+		eip := eip{Bandwidth: bw, Iptype: eipType}
+		ip = &publicIp{Eip: &eip}
+	} else {
+		ip = nil
+	}
 	ecsRequest := escCreateRequest{Server: ecsCreateParameters{
 		AvailabilityZone: "",
 		Name:             name,
 		ImageRef:         imageRef,
 		RootVolume:       rv,
 		FlavorRef:        flavorRef,
+		Publicip:         ip,
 		Vpcid:            vpcID,
 		SecurityGroups:   secGroups,
 		Nics:             subnets,
