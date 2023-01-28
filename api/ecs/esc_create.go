@@ -47,6 +47,7 @@ type serverTag struct {
 
 type rootVolume struct {
 	Volumetype string `json:"volumetype"`
+	Size       int    `json:"size"`
 }
 
 type ecsCreateParameters struct {
@@ -67,10 +68,10 @@ type ecsCreateParameters struct {
 }
 
 func CreateECS(projectID, vpcID, imageRef, name, flavorRef, rootVolumeType, eipId, eipType, bandwidthType string,
-	bandwidthSize int, subnetIds []string, secGroupIds []string, adminPass string, count int) (*ecsModels.ESCJobID, error) {
+	bandwidthSize int, dataVolumesTypes, subnetIds []string, secGroupIds []string, dataVolumesSizes []int, adminPass string, rootVolumeSize, count int) (*ecsModels.ESCJobID, error) {
 
 	endpoint := fmt.Sprintf("https://ecs.ru-moscow-1.hc.sbercloud.ru/v1/%s/cloudservers", projectID)
-	rv := rootVolume{Volumetype: rootVolumeType}
+	rv := rootVolume{Volumetype: rootVolumeType, Size: rootVolumeSize}
 	subnets := make([]nic, len(subnetIds))
 	for i := 0; i < len(subnetIds); i++ {
 		subnets[i].SubnetID = subnetIds[i]
@@ -89,6 +90,11 @@ func CreateECS(projectID, vpcID, imageRef, name, flavorRef, rootVolumeType, eipI
 	} else {
 		ip = nil
 	}
+	dv := make([]dataVolume, len(dataVolumesSizes))
+	for i := 0; i < len(dataVolumesSizes); i++ {
+		dv[i].Size = dataVolumesSizes[i]
+		dv[i].Volumetype = dataVolumesTypes[i]
+	}
 	ecsRequest := escCreateRequest{Server: ecsCreateParameters{
 		AvailabilityZone: "",
 		Name:             name,
@@ -99,6 +105,7 @@ func CreateECS(projectID, vpcID, imageRef, name, flavorRef, rootVolumeType, eipI
 		Vpcid:            vpcID,
 		SecurityGroups:   secGroups,
 		Nics:             subnets,
+		DataVolumes:      dv,
 		KeyName:          "",
 		AdminPass:        adminPass,
 		Count:            count,

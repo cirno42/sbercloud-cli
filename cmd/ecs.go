@@ -90,13 +90,17 @@ var ecsCreateEipBandwidthSize int
 var ecsCreateEipBandwidthType string
 var ecsCreateCount int
 var ecsCreateEipType string
+var ecsCreateVolumeTypes []string
+var ecsCreateVolumeSizes []int
+var ecsCreateRootVolumeSize int
 var ecsCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Delete ECS",
 	Long:  `Delete ECS`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ecs, err := ecs.CreateECS(ProjectID, ecsCreateVpcID, ecsCreateImageRef, ecsCreateName, ecsCreateFlavorRef,
-			ecsCreateRootVolumeType, ecsCreateEipId, ecsCreateEipType, ecsCreateEipBandwidthType, ecsCreateEipBandwidthSize, ecsCreateSubnetIds, ecsCreateSecGroupIds, ecsCreateAdminPass, ecsCreateCount)
+			ecsCreateRootVolumeType, ecsCreateEipId, ecsCreateEipType, ecsCreateEipBandwidthType, ecsCreateEipBandwidthSize, ecsCreateVolumeTypes,
+			ecsCreateSubnetIds, ecsCreateSecGroupIds, ecsCreateVolumeSizes, ecsCreateAdminPass, ecsCreateRootVolumeSize, ecsCreateCount)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
 		} else {
@@ -152,6 +156,38 @@ var ecsBatchStopCmd = &cobra.Command{
 	},
 }
 
+var ecsBatchAddNicsSubnetIds []string
+var ecsBatchAddNicsServerId string
+var ecsBatchAddNicsCmd = &cobra.Command{
+	Use:   "add-nics",
+	Short: "This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time",
+	Long:  `This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := ecs.AddNicsBatchToEcs(ProjectID, ecsBatchAddNicsServerId, ecsBatchAddNicsSubnetIds)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
+var ecsBatchDeleteNicsSubnetIds []string
+var ecsBatchDeleteNicsServerId string
+var ecsBatchDeleteNicsCmd = &cobra.Command{
+	Use:   "delete-nics",
+	Short: "This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time",
+	Long:  `This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := ecs.DeleteNicsBatchToEcs(ProjectID, ecsBatchDeleteNicsServerId, ecsBatchDeleteNicsSubnetIds)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(ecsCmd)
 	ecsCmd.PersistentFlags().StringVarP(&jmesPathQuery, "query", "q", "", "JMES Path query")
@@ -164,6 +200,8 @@ func init() {
 	ecsCmd.AddCommand(ecsBatchStartCmd)
 	ecsCmd.AddCommand(ecsBatchRestartCmd)
 	ecsCmd.AddCommand(ecsBatchStopCmd)
+	ecsCmd.AddCommand(ecsBatchAddNicsCmd)
+	ecsCmd.AddCommand(ecsBatchDeleteNicsCmd)
 
 	ecsFlavorListCmd.Flags().StringVarP(&ecsFlavorListAvailabilityZone, "availability_zone", "a", "", "")
 
@@ -185,7 +223,9 @@ func init() {
 	ecsCreateCmd.Flags().IntVar(&ecsCreateEipBandwidthSize, "eip-size", 1, "Specifies the bandwidth size. Specifies the bandwidth (Mbit/s). The value ranges from 1 to 300.")
 	ecsCreateCmd.Flags().StringVar(&ecsCreateEipBandwidthType, "eip-bandwidth", "", "Specifies the bandwidth sharing type. Enumerated values: PER (indicates exclusive bandwidth) and WHOLE (indicates sharing)")
 	ecsCreateCmd.Flags().StringVar(&ecsCreateEipType, "eip-type", "5_bgp", "Specifies Type of EIP. The value can be 5_bgp, default is 5_bgp")
-
+	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateVolumeTypes, "data-volume-types", nil, "")
+	ecsCreateCmd.Flags().IntSliceVar(&ecsCreateVolumeSizes, "data-volume-sizes", nil, "")
+	ecsCreateCmd.Flags().IntVar(&ecsCreateRootVolumeSize, "root-volume-size", 0, "Specifies the system disk size, in GB. The value ranges from 1 to 1024.")
 	ecsCreateCmd.Flags().IntVar(&ecsCreateCount, "count", 1, "")
 
 	ecsBatchStartCmd.Flags().StringSliceVarP(&ecsBatchStartServerIds, "id", "i", nil, "Specifies ECS IDs")
@@ -196,4 +236,9 @@ func init() {
 	ecsBatchStopCmd.Flags().StringSliceVarP(&ecsBatchStopServerIds, "id", "i", nil, "Specifies ECS IDs")
 	ecsBatchStopCmd.Flags().StringVarP(&ecsBatchStopType, "type", "t", "SOFT", "Specifies an ECS stop type.")
 
+	ecsBatchAddNicsCmd.Flags().StringVarP(&ecsBatchAddNicsServerId, "id", "i", "", "Specifies ECS ID")
+	ecsBatchAddNicsCmd.Flags().StringSliceVarP(&ecsBatchAddNicsSubnetIds, "subnet-ids", "s", nil, "Specifies subnet IDs")
+
+	ecsBatchDeleteNicsCmd.Flags().StringVarP(&ecsBatchDeleteNicsServerId, "id", "i", "", "Specifies ECS ID")
+	ecsBatchDeleteNicsCmd.Flags().StringSliceVarP(&ecsBatchDeleteNicsSubnetIds, "subnet-ids", "s", nil, "Specifies subnet IDs")
 }
