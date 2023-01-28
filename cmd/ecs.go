@@ -101,6 +101,53 @@ var ecsCreateCmd = &cobra.Command{
 	},
 }
 
+var ecsBatchStartServerIds []string
+var ecsBatchStartCmd = &cobra.Command{
+	Use:   "batch-start",
+	Short: "This command is used to start ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time.",
+	Long:  `This command is used to start ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time`,
+	Run: func(cmd *cobra.Command, args []string) {
+		job, err := ecs.BatchStartEcs(ProjectID, ecsBatchStartServerIds)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(job, jmesPathQuery)
+		}
+	},
+}
+
+var ecsBatchRestartServerIds []string
+var ecsBatchRestartType string
+var ecsBatchRestartCmd = &cobra.Command{
+	Use:   "batch-restart",
+	Short: "This command is used to restart  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time",
+	Long:  `This command is used to restart  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time`,
+	Run: func(cmd *cobra.Command, args []string) {
+		job, err := ecs.BatchRestartEcs(ProjectID, ecsBatchRestartType, ecsBatchRestartServerIds)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(job, jmesPathQuery)
+		}
+	},
+}
+
+var ecsBatchStopServerIds []string
+var ecsBatchStopType string
+var ecsBatchStopCmd = &cobra.Command{
+	Use:   "batch-stop",
+	Short: "This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time",
+	Long:  `This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time`,
+	Run: func(cmd *cobra.Command, args []string) {
+		job, err := ecs.BatchStopEcs(ProjectID, ecsBatchStopType, ecsBatchStopServerIds)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(job, jmesPathQuery)
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(ecsCmd)
 	ecsCmd.PersistentFlags().StringVarP(&jmesPathQuery, "query", "q", "", "JMES Path query")
@@ -110,6 +157,9 @@ func init() {
 	ecsCmd.AddCommand(ecsInfoCmd)
 	ecsCmd.AddCommand(ecsDeleteCmd)
 	ecsCmd.AddCommand(ecsCreateCmd)
+	ecsCmd.AddCommand(ecsBatchStartCmd)
+	ecsCmd.AddCommand(ecsBatchRestartCmd)
+	ecsCmd.AddCommand(ecsBatchStopCmd)
 
 	ecsFlavorListCmd.Flags().StringVarP(&ecsFlavorListAvailabilityZone, "availability_zone", "a", "", "")
 
@@ -128,4 +178,13 @@ func init() {
 	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateSecGroupIds, "sg-ids", nil, "")
 	ecsCreateCmd.Flags().StringVar(&ecsCreateAdminPass, "admin-pass", "", "")
 	ecsCreateCmd.Flags().IntVar(&ecsCreateCount, "count", 1, "")
+
+	ecsBatchStartCmd.Flags().StringSliceVarP(&ecsBatchStartServerIds, "id", "i", nil, "Specifies ECS IDs")
+
+	ecsBatchRestartCmd.Flags().StringSliceVarP(&ecsBatchRestartServerIds, "id", "i", nil, "Specifies ECS IDs")
+	ecsBatchRestartCmd.Flags().StringVarP(&ecsBatchRestartType, "type", "t", "SOFT", "Specifies the type of the restart operation.")
+
+	ecsBatchStopCmd.Flags().StringSliceVarP(&ecsBatchStopServerIds, "id", "i", nil, "Specifies ECS IDs")
+	ecsBatchStopCmd.Flags().StringVarP(&ecsBatchStopType, "type", "t", "SOFT", "Specifies an ECS stop type.")
+
 }
