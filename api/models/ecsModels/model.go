@@ -160,3 +160,7 @@ type AttachedDisks struct {
 	} `json:"attachableQuantity"`
 	Volumes []VolumeAttachments `json:"volumeAttachments"`
 }
+
+type BindPrivateIpResponse struct {
+	PortID string `json:"port_id"`
+}

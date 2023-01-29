@@ -268,6 +268,54 @@ var ecsGetDiskInfoCmd = &cobra.Command{
 	},
 }
 
+var ecsGetNicsEcsId string
+var ecsGetNicsListCmd = &cobra.Command{
+	Use:   "get-nics",
+	Short: "This command is used to query NICs of an ECS.",
+	Long:  `This command is used to query NICs of an ECS.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		disks, err := ecs.GetEcsNics(ProjectID, ecsGetNicsEcsId)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(disks, jmesPathQuery)
+		}
+	},
+}
+
+var ecsBindPrivateIpNicId string
+var ecsBindPrivateIpSubnetId string
+var ecsBindPrivateIpAddress string
+var ecsBindPrivateIpReverseBinding bool
+var ecsBindPrivateIpCmd = &cobra.Command{
+	Use:   "bind-private-ip",
+	Short: "This command is used to query NICs of an ECS.",
+	Long:  `This command is used to query NICs of an ECS.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		disks, err := ecs.BindPrivateIp(ProjectID, ecsBindPrivateIpNicId, ecsBindPrivateIpSubnetId, ecsBindPrivateIpAddress, ecsBindPrivateIpReverseBinding)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(disks, jmesPathQuery)
+		}
+	},
+}
+
+var ecsUnbindPrivateIpNicId string
+var ecsUnbindPrivateIpCmd = &cobra.Command{
+	Use:   "unbind-private-ip",
+	Short: "This command is used to query NICs of an ECS.",
+	Long:  `This command is used to query NICs of an ECS.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		disks, err := ecs.BindPrivateIp(ProjectID, ecsBindPrivateIpNicId, "", "", false) //API for unbind IP is same as for bind, but all fields must be empty
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(disks, jmesPathQuery)
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(ecsCmd)
 	ecsCmd.PersistentFlags().StringVarP(&jmesPathQuery, "query", "q", "", "JMES Path query")
@@ -287,6 +335,9 @@ func init() {
 	ecsCmd.AddCommand(ecsDetachDiskCmd)
 	ecsCmd.AddCommand(ecsGetAttachedDisksCmd)
 	ecsCmd.AddCommand(ecsGetDiskInfoCmd)
+	ecsCmd.AddCommand(ecsGetNicsListCmd)
+	ecsCmd.AddCommand(ecsBindPrivateIpCmd)
+	ecsCmd.AddCommand(ecsUnbindPrivateIpCmd)
 
 	ecsFlavorListCmd.Flags().StringVarP(&ecsFlavorListAvailabilityZone, "availability_zone", "a", "", "")
 
@@ -342,4 +393,13 @@ func init() {
 
 	ecsGetDiskInfoCmd.Flags().StringVarP(&ecsGetDiskInfoEcsId, "ecs-id", "e", "", "Specifies ECS ID")
 	ecsGetDiskInfoCmd.Flags().StringVarP(&ecsGetDiskInfoVolumeId, "vol-id", "v", "", "Specifies volume ID")
+
+	ecsGetNicsListCmd.Flags().StringVarP(&ecsGetNicsEcsId, "ecs-id", "e", "", "Specifies ECS ID")
+
+	ecsBindPrivateIpCmd.Flags().StringVarP(&ecsBindPrivateIpNicId, "nic-id", "n", "", "")
+	ecsBindPrivateIpCmd.Flags().StringVarP(&ecsBindPrivateIpSubnetId, "subnet-id", "s", "", "")
+	ecsBindPrivateIpCmd.Flags().StringVarP(&ecsBindPrivateIpAddress, "ip", "i", "", "")
+	ecsBindPrivateIpCmd.Flags().BoolVarP(&ecsBindPrivateIpReverseBinding, "reverse-binding", "r", false, "")
+
+	ecsUnbindPrivateIpCmd.Flags().StringVarP(&ecsUnbindPrivateIpNicId, "nic-id", "n", "", "")
 }

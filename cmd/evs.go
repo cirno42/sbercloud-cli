@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"sbercloud-cli/api/evs"
 	"sbercloud-cli/internal/beautyfulPrints"
@@ -49,11 +50,45 @@ var evsJobInfoCmd = &cobra.Command{
 	},
 }
 
+var evsListLimit int
+var evsListOffset int
+var evsListStatus string
+var evsEvsGetListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "This command is used to query details about all disks.",
+	Long:  `This command is used to query details about all disks.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		evs, err := evs.GetDisksList(ProjectID, evsListStatus, evsListLimit, evsListOffset)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(evs, jmesPathQuery)
+		}
+	},
+}
+
+var evsDeleteVolumeId string
+var evsEvsDeleteCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "This command is used to delete an EVS disk.",
+	Long:  `This command is used to delete an EVS disk.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := evs.DeleteDisk(ProjectID, evsDeleteVolumeId)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(evsCmd)
 
 	evsCmd.AddCommand(evsCreateDiskCmd)
 	evsCmd.AddCommand(evsJobInfoCmd)
+	evsCmd.AddCommand(evsEvsGetListCmd)
+	evsCmd.AddCommand(evsEvsDeleteCmd)
 
 	evsCreateDiskCmd.Flags().IntVarP(&evsCreateCount, "count", "c", 1, "")
 	evsCreateDiskCmd.Flags().IntVarP(&evsCreateSize, "size", "s", 0, "")
@@ -63,4 +98,10 @@ func init() {
 	evsCreateDiskCmd.Flags().BoolVarP(&evsCreateMultiattach, "multiattach", "m", false, "")
 
 	evsJobInfoCmd.Flags().StringVarP(&evsJobId, "id", "i", "", "")
+
+	evsEvsGetListCmd.Flags().IntVarP(&evsListLimit, "limit", "l", 0, "")
+	evsEvsGetListCmd.Flags().IntVarP(&evsListOffset, "offset", "o", 0, "")
+	evsEvsGetListCmd.Flags().StringVarP(&evsListStatus, "status", "s", "", "")
+
+	evsEvsDeleteCmd.Flags().StringVarP(&evsDeleteVolumeId, "id", "i", "", "")
 }
