@@ -11,7 +11,6 @@ type getImagesListResponse struct {
 	Images []imsModels.ImageModel `json:"images"`
 }
 
-//ims.ru-moscow-1.hc.sbercloud.ru
 func GetImagesList(platform string) ([]imsModels.ImageModel, error) {
 	endpoint := fmt.Sprintf(endpoints.GetEndpointAddress(endpoints.ImsEndpoint)+"/v2/cloudimages?__platform=%s", platform)
 	var imgs getImagesListResponse

@@ -220,6 +220,54 @@ var ecsAttachDiskCmd = &cobra.Command{
 	},
 }
 
+var ecsDetachDiskVolumeId string
+var ecsDetachDiskEcsId string
+var ecsDetachDeleteFlag int
+var ecsDetachDiskCmd = &cobra.Command{
+	Use:   "detach-disk",
+	Short: "This command is used to detach a disk from an ECS.",
+	Long:  `This command is used to detach a disk from an ECS.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := ecs.DetachDiskEcs(ProjectID, ecsDetachDiskEcsId, ecsDetachDiskVolumeId, ecsDetachDeleteFlag)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
+var ecsGetAttachedDisksEcsId string
+var ecsGetAttachedDisksCmd = &cobra.Command{
+	Use:   "get-attached-disks",
+	Short: "This command is used to query information about disks attached to an ECS.",
+	Long:  `This command is used to query information about disks attached to an ECS.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		disks, err := ecs.GetListAttachedDisks(ProjectID, ecsGetAttachedDisksEcsId)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(disks, jmesPathQuery)
+		}
+	},
+}
+
+var ecsGetDiskInfoEcsId string
+var ecsGetDiskInfoVolumeId string
+var ecsGetDiskInfoCmd = &cobra.Command{
+	Use:   "get-disk-info",
+	Short: "This command is used to query information about disk attached to an ECS.",
+	Long:  `This command is used to query information about disk attached to an ECS.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		disks, err := ecs.GetInfoAboutAttachedDisk(ProjectID, ecsGetDiskInfoEcsId, ecsGetDiskInfoVolumeId)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(disks, jmesPathQuery)
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(ecsCmd)
 	ecsCmd.PersistentFlags().StringVarP(&jmesPathQuery, "query", "q", "", "JMES Path query")
@@ -236,6 +284,9 @@ func init() {
 	ecsCmd.AddCommand(ecsBatchDeleteNicsCmd)
 	ecsCmd.AddCommand(jobInfoCmd)
 	ecsCmd.AddCommand(ecsAttachDiskCmd)
+	ecsCmd.AddCommand(ecsDetachDiskCmd)
+	ecsCmd.AddCommand(ecsGetAttachedDisksCmd)
+	ecsCmd.AddCommand(ecsGetDiskInfoCmd)
 
 	ecsFlavorListCmd.Flags().StringVarP(&ecsFlavorListAvailabilityZone, "availability_zone", "a", "", "")
 
@@ -280,7 +331,15 @@ func init() {
 	jobInfoCmd.Flags().StringVarP(&ecsJobId, "id", "i", "", "")
 
 	ecsAttachDiskCmd.Flags().StringVar(&ecsAttachDiskEcsId, "ecs-id", "", "Specifies ECS ID")
-	ecsAttachDiskCmd.Flags().StringVar(&ecsAttachDiskVolumeId, "vol-id", "s", "Specifies subnet IDs")
-	ecsAttachDiskCmd.Flags().StringVar(&ecsAttachDiskDevice, "device", "s", "Specifies subnet IDs")
+	ecsAttachDiskCmd.Flags().StringVar(&ecsAttachDiskVolumeId, "vol-id", "", "Specifies volume ID")
+	ecsAttachDiskCmd.Flags().StringVar(&ecsAttachDiskDevice, "device", "", "Specifies device")
 
+	ecsDetachDiskCmd.Flags().StringVarP(&ecsDetachDiskEcsId, "ecs-id", "e", "", "Specifies ECS ID")
+	ecsDetachDiskCmd.Flags().StringVarP(&ecsDetachDiskVolumeId, "vol-id", "v", "", "Specifies volume ID")
+	ecsDetachDiskCmd.Flags().IntVarP(&ecsDetachDeleteFlag, "delete-flag", "d", 0, "Indicates whether to forcibly detach a data disk.")
+
+	ecsGetAttachedDisksCmd.Flags().StringVarP(&ecsGetAttachedDisksEcsId, "ecs-id", "e", "", "Specifies ECS ID")
+
+	ecsGetDiskInfoCmd.Flags().StringVarP(&ecsGetDiskInfoEcsId, "ecs-id", "e", "", "Specifies ECS ID")
+	ecsGetDiskInfoCmd.Flags().StringVarP(&ecsGetDiskInfoVolumeId, "vol-id", "v", "", "Specifies volume ID")
 }

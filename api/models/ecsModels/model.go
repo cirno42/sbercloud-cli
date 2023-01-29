@@ -141,3 +141,22 @@ type ECSJob struct {
 	ErrorCode  string    `json:"error_code"`
 	FailReason string    `json:"fail_reason"`
 }
+
+type VolumeAttachments struct {
+	PciAddress string `json:"pciAddress"`
+	VolumeID   string `json:"volumeId"`
+	Device     string `json:"device"`
+	ServerID   string `json:"serverId"`
+	ID         string `json:"id"`
+	Size       int    `json:"size"`
+	BootIndex  int    `json:"bootIndex"`
+	Bus        string `json:"bus"`
+}
+type AttachedDisks struct {
+	AttachableQuantity struct {
+		FreeScsi int `json:"free_scsi"`
+		FreeBlk  int `json:"free_blk"`
+		FreeDisk int `json:"free_disk"`
+	} `json:"attachableQuantity"`
+	Volumes []VolumeAttachments `json:"volumeAttachments"`
+}
