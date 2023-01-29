@@ -1,1 +1,0 @@
-package availability_zone
