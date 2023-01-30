@@ -17,7 +17,7 @@ func GetInfoAboutEIPByAddress(projectID, ipAddress string) (*eipModels.EipModel,
 		return nil, err
 	}
 	for i := 0; i < len(ipArray); i++ {
-		if ipArray[i].PublicIP == ipAddress {
+		if ipArray[i].PublicIPAddress == ipAddress {
 			return &ipArray[i], nil
 		}
 	}

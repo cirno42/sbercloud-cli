@@ -3,7 +3,7 @@ package eipModels
 type EipModel struct {
 	Id                  string `json:"id" header:"id"`
 	EipType             string `json:"type" header:"type"`
-	PublicIP            string `json:"public_ip_address" header:"public_ip_address"`
+	PublicIPAddress     string `json:"public_ip_address" header:"public_ip_address"`
 	Status              string `json:"status" header:"status"`
 	TenantID            string `json:"tenant_id" header:"tenant_id"`
 	CreateTime          string `json:"create_time" header:"create_time"`

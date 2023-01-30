@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"github.com/spf13/cobra"
 	"sbercloud-cli/api/models/natModels"
 	"sbercloud-cli/api/nat"
@@ -132,6 +133,91 @@ var natDeleteCmd = &cobra.Command{
 	},
 }
 
+var createSNATRuleNatID string
+var createSNATRuleVpcID string
+var createSNATRuleEipID string
+var createSNATRuleDescription string
+var createSNATRuleSourceType int
+var natCreateSNATRuleCmd = &cobra.Command{
+	Use:   "add-snat-rule",
+	Short: "Create SNAT Rule",
+	Long:  `Create SNAT Rule`,
+	Run: func(cmd *cobra.Command, args []string) {
+		rule, err := nat.CreateSNATRule(ProjectID, createSNATRuleNatID, createSNATRuleVpcID, createSNATRuleEipID, createSNATRuleDescription, createSNATRuleSourceType)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(rule, jmesPathQuery)
+		}
+	},
+}
+
+var listSNATRulesGatewayId string
+var listSNATRulesIpAddress string
+var listSNATRulesLimit int
+var natListSNATRuleCmd = &cobra.Command{
+	Use:   "list-snat-rule",
+	Short: "List SNAT Rules",
+	Long:  `List SNAT Rules`,
+	Run: func(cmd *cobra.Command, args []string) {
+		rules, err := nat.ListSNATRules(ProjectID, listSNATRulesGatewayId, listSNATRulesIpAddress, listSNATRulesLimit)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(rules, jmesPathQuery)
+		}
+	},
+}
+
+var getSNATRuleId string
+var natGetInfoSNATRuleCmd = &cobra.Command{
+	Use:   "get-snat-rule",
+	Short: "This command is used to query details about a specified SNAT rule.",
+	Long:  `This command is used to query details about a specified SNAT rule.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		rule, err := nat.GetSNATRule(ProjectID, getSNATRuleId)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(rule, jmesPathQuery)
+		}
+	},
+}
+
+var deleteSNATRuleId string
+var deleteRuleNATId string
+var natDeleteSNATRuleCmd = &cobra.Command{
+	Use:   "delete-snat-rule",
+	Short: "This command is used to query details about a specified SNAT rule.",
+	Long:  `This API is used to query details about a specified SNAT rule.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := nat.DeleteSNATRule(ProjectID, deleteRuleNATId, deleteSNATRuleId)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
+var updateSNATRuleId string
+var updateRuleNATId string
+var updateRulePublicIP string
+var updateRuleDesc string
+var natUpdateSNATRuleCmd = &cobra.Command{
+	Use:   "update-snat-rule",
+	Short: "This command is used to update an SNAT rule..",
+	Long:  `This command is used to update an SNAT rule..`,
+	Run: func(cmd *cobra.Command, args []string) {
+		rule, err := nat.UpdateSNATRule(ProjectID, updateSNATRuleId, updateRuleNATId, updateRulePublicIP, updateRuleDesc)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(rule, jmesPathQuery)
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(natCmd)
 	natCmd.PersistentFlags().StringVarP(&jmesPathQuery, "query", "q", "", "JMES Path query")
@@ -141,6 +227,11 @@ func init() {
 	natCmd.AddCommand(natGetInfoCmd)
 	natCmd.AddCommand(natDeleteCmd)
 	natCmd.AddCommand(natUpdateCmd)
+	natCmd.AddCommand(natCreateSNATRuleCmd)
+	natCmd.AddCommand(natListSNATRuleCmd)
+	natCmd.AddCommand(natGetInfoSNATRuleCmd)
+	natCmd.AddCommand(natDeleteSNATRuleCmd)
+	natCmd.AddCommand(natUpdateSNATRuleCmd)
 
 	natCreateCmd.Flags().StringVarP(&natCreateName, "name", "n", "", "Specifies the NAT gateway name. The name can contain only digits, letters, underscores (_), and hyphens (-).")
 	natCreateCmd.Flags().StringVarP(&natCreateDesc, "description", "d", "", "Provides supplementary information about the NAT gateway.")
@@ -160,4 +251,25 @@ func init() {
 
 	natDeleteCmd.Flags().StringVarP(&natDeleteNatID, "id", "i", "", "Specifies the NAT ID.")
 	natDeleteCmd.Flags().StringVarP(&natDeleteNatName, "name", "n", "", "Specifies the NAT name.")
+
+	natCreateSNATRuleCmd.Flags().StringVarP(&createSNATRuleNatID, "nat-id", "n", "", "Specifies the NAT ID")
+	natCreateSNATRuleCmd.Flags().StringVarP(&createSNATRuleVpcID, "subnet-id", "i", "", "Specifies the VPC ID")
+	natCreateSNATRuleCmd.Flags().StringVarP(&createSNATRuleEipID, "eip-id", "e", "", "Specifies the EIP ID")
+	natCreateSNATRuleCmd.Flags().StringVarP(&createSNATRuleDescription, "desc", "d", "", "Provides supplementary information about the NAT gateway")
+	natCreateSNATRuleCmd.Flags().IntVarP(&createSNATRuleSourceType, "source-type", "s", 0, "0: Either network_id or cidr can be specified in a VPC. 1: Only cidr can be specified over a Direct Connect connection.")
+
+	natListSNATRuleCmd.Flags().StringVarP(&listSNATRulesGatewayId, "nat-id", "n", "", "Specifies the NAT gateway ID.")
+	natListSNATRuleCmd.Flags().StringVarP(&listSNATRulesIpAddress, "ip-addr", "a", "", "Specifies the EIP.")
+	natListSNATRuleCmd.Flags().IntVarP(&listSNATRulesLimit, "limit", "l", 0, "Specifies the number of records displayed on each page.")
+
+	natGetInfoSNATRuleCmd.Flags().StringVarP(&getSNATRuleId, "rule-id", "i", "", "Specifies the SNAT rule ID.")
+
+	natDeleteSNATRuleCmd.Flags().StringVarP(&deleteRuleNATId, "nat-id", "n", "", "Specifies the NAT gateway ID.")
+	natDeleteSNATRuleCmd.Flags().StringVarP(&deleteSNATRuleId, "rule-id", "r", "", "Specifies the SNAT rule ID.")
+
+	natUpdateSNATRuleCmd.Flags().StringVarP(&updateSNATRuleId, "rule-id", "r", "", "Specifies the SNAT rule ID.")
+	natUpdateSNATRuleCmd.Flags().StringVarP(&updateRuleNATId, "nat-id", "n", "", "Specifies the NAT gateway ID.")
+	natUpdateSNATRuleCmd.Flags().StringVarP(&updateRulePublicIP, "ip", "i", "", "Specifies the EIP. Multiple EIPs are separated using commas (,).")
+	natUpdateSNATRuleCmd.Flags().StringVarP(&updateRuleDesc, "desc", "d", "", "Provides supplementary information about the SNAT rule.")
+
 }

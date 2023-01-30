@@ -16,3 +16,17 @@ type NatModel struct {
 	EnterpriseProjectID   string `json:"enterprise_project_id" header:"enterprise_project_id"`
 	BillingInfo           string `json:"billing_info" header:"billing_info"`
 }
+
+type SnatRuleModel struct {
+	FloatingIPID      string `json:"floating_ip_id"`
+	Status            string `json:"status"`
+	NatGatewayID      string `json:"nat_gateway_id"`
+	AdminStateUp      bool   `json:"admin_state_up"`
+	NetworkID         string `json:"network_id"`
+	Description       string `json:"description"`
+	SourceType        int    `json:"source_type"`
+	TenantID          string `json:"tenant_id"`
+	CreatedAt         string `json:"created_at"`
+	ID                string `json:"id"`
+	FloatingIPAddress string `json:"floating_ip_address"`
+}
