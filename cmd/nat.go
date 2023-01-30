@@ -188,8 +188,8 @@ var deleteSNATRuleId string
 var deleteRuleNATId string
 var natDeleteSNATRuleCmd = &cobra.Command{
 	Use:   "delete-snat-rule",
-	Short: "This command is used to query details about a specified SNAT rule.",
-	Long:  `This API is used to query details about a specified SNAT rule.`,
+	Short: "This command is used to delete an SNAT rule.",
+	Long:  `This command is used to delete an SNAT rule.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := nat.DeleteSNATRule(ProjectID, deleteRuleNATId, deleteSNATRuleId)
 		if err != nil {
