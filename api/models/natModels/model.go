@@ -30,3 +30,22 @@ type SnatRuleModel struct {
 	ID                string `json:"id"`
 	FloatingIPAddress string `json:"floating_ip_address"`
 }
+
+type DnatRuleModel struct {
+	FloatingIPID             string `json:"floating_ip_id"`
+	Status                   string `json:"status"`
+	NatGatewayID             string `json:"nat_gateway_id"`
+	AdminStateUp             bool   `json:"admin_state_up"`
+	PortID                   string `json:"port_ID"`
+	PrivateIP                string `json:"private_ip"`
+	InternalServicePort      int    `json:"internal_service_port"`
+	Protocol                 string `json:"protocol"`
+	TenantID                 string `json:"tenant_id"`
+	CreatedAt                string `json:"created_at"`
+	ID                       string `json:"id"`
+	FloatingIPAddress        string `json:"floating_ip_address"`
+	ExternalServicePort      int    `json:"external_service_port"`
+	Description              string `json:"description"`
+	ExternalServicePortRange string `json:"external_service_port_range"`
+	InternalServicePortRange string `json:"internal_service_port_range"`
+}
