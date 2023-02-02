@@ -126,12 +126,12 @@ type ECSJob struct {
 			Entities struct {
 				ServerID string `json:"server_id"`
 			} `json:"entities"`
-			JobID      string    `json:"job_id"`
-			JobType    string    `json:"job_type"`
-			BeginTime  time.Time `json:"begin_time"`
-			EndTime    time.Time `json:"end_time"`
-			ErrorCode  string    `json:"error_code"`
-			FailReason string    `json:"fail_reason"`
+			JobID      string `json:"job_id"`
+			JobType    string `json:"job_type"`
+			BeginTime  string `json:"begin_time"`
+			EndTime    string `json:"end_time"`
+			ErrorCode  string `json:"error_code"`
+			FailReason string `json:"fail_reason"`
 		} `json:"sub_jobs"`
 	} `json:"entities"`
 	JobID      string    `json:"job_id"`
@@ -163,4 +163,13 @@ type AttachedDisks struct {
 
 type BindPrivateIpResponse struct {
 	PortID string `json:"port_id"`
+}
+
+type Keypair struct {
+	PublicKey   string `json:"public_key"`
+	PrivateKey  string `json:"private_key"`
+	UserID      string `json:"user_id"`
+	Type        string `json:"type"`
+	Name        string `json:"name"`
+	Fingerprint string `json:"fingerprint"`
 }

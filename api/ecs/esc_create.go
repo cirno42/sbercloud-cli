@@ -68,7 +68,7 @@ type ecsCreateParameters struct {
 }
 
 func CreateECS(projectID, vpcID, imageRef, name, flavorRef, rootVolumeType, availabilityZone, eipId, eipType, bandwidthType string,
-	bandwidthSize int, dataVolumesTypes, subnetIds []string, secGroupIds []string, dataVolumesSizes []int, adminPass string, rootVolumeSize, count int) (*ecsModels.ESCJobID, error) {
+	bandwidthSize int, dataVolumesTypes, subnetIds []string, secGroupIds []string, dataVolumesSizes []int, adminPass, keyName string, rootVolumeSize, count int) (*ecsModels.ESCJobID, error) {
 
 	endpoint := fmt.Sprintf("https://ecs.ru-moscow-1.hc.sbercloud.ru/v1/%s/cloudservers", projectID)
 	rv := rootVolume{Volumetype: rootVolumeType, Size: rootVolumeSize}
@@ -106,7 +106,7 @@ func CreateECS(projectID, vpcID, imageRef, name, flavorRef, rootVolumeType, avai
 		SecurityGroups:   secGroups,
 		Nics:             subnets,
 		DataVolumes:      dv,
-		KeyName:          "",
+		KeyName:          keyName,
 		AdminPass:        adminPass,
 		Count:            count,
 		ServerTags:       nil,

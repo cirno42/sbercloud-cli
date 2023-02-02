@@ -93,6 +93,7 @@ var ecsCreateVolumeTypes []string
 var ecsCreateVolumeSizes []int
 var ecsCreateRootVolumeSize int
 var ecsCreateAvailabilityZone string
+var ecsCreateKeyName string
 var ecsCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Delete ECS",
@@ -100,7 +101,7 @@ var ecsCreateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ecs, err := ecs.CreateECS(ProjectID, ecsCreateVpcID, ecsCreateImageRef, ecsCreateName, ecsCreateFlavorRef,
 			ecsCreateRootVolumeType, ecsCreateAvailabilityZone, ecsCreateEipId, ecsCreateEipType, ecsCreateEipBandwidthType, ecsCreateEipBandwidthSize, ecsCreateVolumeTypes,
-			ecsCreateSubnetIds, ecsCreateSecGroupIds, ecsCreateVolumeSizes, ecsCreateAdminPass, ecsCreateRootVolumeSize, ecsCreateCount)
+			ecsCreateSubnetIds, ecsCreateSecGroupIds, ecsCreateVolumeSizes, ecsCreateAdminPass, ecsCreateKeyName, ecsCreateRootVolumeSize, ecsCreateCount)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
 		} else {
@@ -316,6 +317,81 @@ var ecsUnbindPrivateIpCmd = &cobra.Command{
 	},
 }
 
+var createKeypairKeyName string
+var ecsCreateKeypairCmd = &cobra.Command{
+	Use:   "create-keypair",
+	Short: "This command is used to query NICs of an ECS.",
+	Long:  `This command is used to query NICs of an ECS.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		key, err := ecs.CreateKeyPair(ProjectID, createKeypairKeyName)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(key, jmesPathQuery)
+		}
+	},
+}
+
+var importKeypairKeyName string
+var importKeypairKeyPublicKey string
+var ecsImportKeypairCmd = &cobra.Command{
+	Use:   "import-keypair",
+	Short: "This command is used to query NICs of an ECS.",
+	Long:  `This command is used to query NICs of an ECS.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		key, err := ecs.ImportKeyPair(ProjectID, importKeypairKeyName, importKeypairKeyPublicKey)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(key, jmesPathQuery)
+		}
+	},
+}
+
+var ecsListKeypairCmd = &cobra.Command{
+	Use:   "list-keypair",
+	Short: "This command is used to query NICs of an ECS.",
+	Long:  `This command is used to query NICs of an ECS.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		keys, err := ecs.ListKeypairs(ProjectID)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(keys, jmesPathQuery)
+		}
+	},
+}
+
+var getKeypairKeyName string
+var ecsGetKeypairCmd = &cobra.Command{
+	Use:   "get-keypair",
+	Short: "This command is used to query NICs of an ECS.",
+	Long:  `This command is used to query NICs of an ECS.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		key, err := ecs.GetKeypair(ProjectID, getKeypairKeyName)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(key, jmesPathQuery)
+		}
+	},
+}
+
+var deleteKeypairKeyName string
+var ecsDeleteKeypairCmd = &cobra.Command{
+	Use:   "delete-keypair",
+	Short: "This command is used to query NICs of an ECS.",
+	Long:  `This command is used to query NICs of an ECS.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := ecs.DeleteKeypair(ProjectID, deleteKeypairKeyName)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(ecsCmd)
 	ecsCmd.PersistentFlags().StringVarP(&jmesPathQuery, "query", "q", "", "JMES Path query")
@@ -338,6 +414,11 @@ func init() {
 	ecsCmd.AddCommand(ecsGetNicsListCmd)
 	ecsCmd.AddCommand(ecsBindPrivateIpCmd)
 	ecsCmd.AddCommand(ecsUnbindPrivateIpCmd)
+	ecsCmd.AddCommand(ecsCreateKeypairCmd)
+	ecsCmd.AddCommand(ecsImportKeypairCmd)
+	ecsCmd.AddCommand(ecsListKeypairCmd)
+	ecsCmd.AddCommand(ecsGetKeypairCmd)
+	ecsCmd.AddCommand(ecsDeleteKeypairCmd)
 
 	ecsFlavorListCmd.Flags().StringVarP(&ecsFlavorListAvailabilityZone, "availability_zone", "a", "", "")
 
@@ -364,6 +445,7 @@ func init() {
 	ecsCreateCmd.Flags().IntVar(&ecsCreateRootVolumeSize, "root-volume-size", 0, "Specifies the system disk size, in GB. The value ranges from 1 to 1024.")
 	ecsCreateCmd.Flags().IntVar(&ecsCreateCount, "count", 1, "")
 	ecsCreateCmd.Flags().StringVar(&ecsCreateAvailabilityZone, "az", "", "")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateKeyName, "key-name", "", "")
 
 	ecsBatchStartCmd.Flags().StringSliceVarP(&ecsBatchStartServerIds, "id", "i", nil, "Specifies ECS IDs")
 
@@ -402,4 +484,13 @@ func init() {
 	ecsBindPrivateIpCmd.Flags().BoolVarP(&ecsBindPrivateIpReverseBinding, "reverse-binding", "r", false, "")
 
 	ecsUnbindPrivateIpCmd.Flags().StringVarP(&ecsUnbindPrivateIpNicId, "nic-id", "n", "", "")
+
+	ecsCreateKeypairCmd.Flags().StringVarP(&createKeypairKeyName, "name", "n", "", "")
+
+	ecsImportKeypairCmd.Flags().StringVarP(&createKeypairKeyName, "name", "n", "", "")
+	ecsImportKeypairCmd.Flags().StringVarP(&createKeypairKeyName, "public-ip", "p", "", "")
+
+	ecsGetKeypairCmd.Flags().StringVarP(&getKeypairKeyName, "name", "n", "", "")
+
+	ecsDeleteKeypairCmd.Flags().StringVarP(&deleteKeypairKeyName, "name", "n", "", "")
 }
