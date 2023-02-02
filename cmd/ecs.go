@@ -392,6 +392,25 @@ var ecsDeleteKeypairCmd = &cobra.Command{
 	},
 }
 
+var changeFlavorListEcsID string
+var changeFlavorListSortKey string
+var changeFlavorListSortDir string
+var changeFlavorListMarker string
+var changeFlavorListLimit int
+var ecsChangeFlavorListCmd = &cobra.Command{
+	Use:   "change-flavor-list",
+	Short: "This command is used to query NICs of an ECS.",
+	Long:  `This command is used to query NICs of an ECS.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		flavors, err := ecs.ListResizeFlavors(ProjectID, changeFlavorListSortKey, changeFlavorListSortDir, changeFlavorListMarker, changeFlavorListEcsID, changeFlavorListLimit)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(flavors, jmesPathQuery)
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(ecsCmd)
 	ecsCmd.PersistentFlags().StringVarP(&jmesPathQuery, "query", "q", "", "JMES Path query")
@@ -419,6 +438,7 @@ func init() {
 	ecsCmd.AddCommand(ecsListKeypairCmd)
 	ecsCmd.AddCommand(ecsGetKeypairCmd)
 	ecsCmd.AddCommand(ecsDeleteKeypairCmd)
+	ecsCmd.AddCommand(ecsChangeFlavorListCmd)
 
 	ecsFlavorListCmd.Flags().StringVarP(&ecsFlavorListAvailabilityZone, "availability_zone", "a", "", "")
 
@@ -493,4 +513,10 @@ func init() {
 	ecsGetKeypairCmd.Flags().StringVarP(&getKeypairKeyName, "name", "n", "", "")
 
 	ecsDeleteKeypairCmd.Flags().StringVarP(&deleteKeypairKeyName, "name", "n", "", "")
+
+	ecsChangeFlavorListCmd.Flags().StringVar(&changeFlavorListEcsID, "ecs-id", "", "")
+	ecsChangeFlavorListCmd.Flags().StringVar(&changeFlavorListSortKey, "sort-key", "", "")
+	ecsChangeFlavorListCmd.Flags().StringVar(&changeFlavorListSortDir, "sort-dir", "", "")
+	ecsChangeFlavorListCmd.Flags().StringVar(&changeFlavorListMarker, "marker", "", "")
+	ecsChangeFlavorListCmd.Flags().IntVar(&changeFlavorListLimit, "limit", 0, "")
 }

@@ -91,7 +91,7 @@ type FlavorModel struct {
 	ID    string `json:"id"`
 	Name  string `json:"name"`
 	Vcpus string `json:"vcpus"`
-	RAM   int    `json:"ram"`
+	Ram   int    `json:"ram"`
 	Disk  string `json:"disk"`
 	Swap  string `json:"swap"`
 	Links []struct {
