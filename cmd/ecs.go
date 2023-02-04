@@ -411,6 +411,23 @@ var ecsChangeFlavorListCmd = &cobra.Command{
 	},
 }
 
+var changeFlavorEcsID string
+var changeFlavorFlavorRef string
+var changeFlavorDryRun bool
+var ecsChangeFlavorCmd = &cobra.Command{
+	Use:   "change-flavor",
+	Short: "This command is used to query NICs of an ECS.",
+	Long:  `This command is used to query NICs of an ECS.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := ecs.ResizeECS(ProjectID, changeFlavorEcsID, changeFlavorFlavorRef, changeFlavorDryRun)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(ecsCmd)
 	ecsCmd.PersistentFlags().StringVarP(&jmesPathQuery, "query", "q", "", "JMES Path query")
@@ -439,6 +456,7 @@ func init() {
 	ecsCmd.AddCommand(ecsGetKeypairCmd)
 	ecsCmd.AddCommand(ecsDeleteKeypairCmd)
 	ecsCmd.AddCommand(ecsChangeFlavorListCmd)
+	ecsCmd.AddCommand(ecsChangeFlavorCmd)
 
 	ecsFlavorListCmd.Flags().StringVarP(&ecsFlavorListAvailabilityZone, "availability_zone", "a", "", "")
 
@@ -519,4 +537,8 @@ func init() {
 	ecsChangeFlavorListCmd.Flags().StringVar(&changeFlavorListSortDir, "sort-dir", "", "")
 	ecsChangeFlavorListCmd.Flags().StringVar(&changeFlavorListMarker, "marker", "", "")
 	ecsChangeFlavorListCmd.Flags().IntVar(&changeFlavorListLimit, "limit", 0, "")
+
+	ecsChangeFlavorCmd.Flags().StringVarP(&changeFlavorEcsID, "ecs-id", "e", "", "")
+	ecsChangeFlavorCmd.Flags().StringVarP(&changeFlavorFlavorRef, "flavor-id", "f", "", "")
+	ecsChangeFlavorCmd.Flags().BoolVarP(&changeFlavorDryRun, "dry-run", "d", false, "")
 }

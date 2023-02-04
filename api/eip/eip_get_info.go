@@ -11,6 +11,10 @@ type eipQueryingResponse struct {
 	PublicIPs []eipModels.EipModel `json:"publicips"`
 }
 
+type eipGetInfoResponse struct {
+	PublicIP eipModels.EipModel `json:"publicip"`
+}
+
 func GetInfoAboutEIPByAddress(projectID, ipAddress string) (*eipModels.EipModel, error) {
 	ipArray, err := GetEIPsList(projectID, 1000, "")
 	if err != nil {
@@ -26,9 +30,9 @@ func GetInfoAboutEIPByAddress(projectID, ipAddress string) (*eipModels.EipModel,
 
 func GetEIPInfo(projectID, publicIpId string) (*eipModels.EipModel, error) {
 	endpoint := fmt.Sprintf(endpoints.GetEndpointAddress(endpoints.VpcEndpoint)+"/v1/%s/publicips/%s", projectID, publicIpId)
-	var publicIP eipModels.EipModel
+	var publicIP eipGetInfoResponse
 	err := requestMakers.CreateAndDoRequest(endpoint, requestMakers.HTTP_METHOD_GET, nil, &publicIP, nil)
-	return &publicIP, err
+	return &publicIP.PublicIP, err
 }
 
 func GetEIPsList(projectID string, limit int, marker string) ([]eipModels.EipModel, error) {

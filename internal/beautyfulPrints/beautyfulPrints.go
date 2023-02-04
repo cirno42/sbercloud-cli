@@ -12,7 +12,9 @@ import (
 )
 
 func PrintError(err error) {
-	fmt.Printf("ERROR: %s\n", err.Error())
+	var errStruct interface{}
+	err = json.Unmarshal([]byte(err.Error()), &errStruct)
+	PrintStruct(errStruct, "")
 }
 
 func PrintStruct(s interface{}, jmesPathQuery string) {

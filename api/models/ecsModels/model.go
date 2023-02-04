@@ -134,12 +134,12 @@ type ECSJob struct {
 			FailReason string `json:"fail_reason"`
 		} `json:"sub_jobs"`
 	} `json:"entities"`
-	JobID      string    `json:"job_id"`
-	JobType    string    `json:"job_type"`
-	BeginTime  time.Time `json:"begin_time"`
-	EndTime    time.Time `json:"end_time"`
-	ErrorCode  string    `json:"error_code"`
-	FailReason string    `json:"fail_reason"`
+	JobID      string `json:"job_id"`
+	JobType    string `json:"job_type"`
+	BeginTime  string `json:"begin_time"`
+	EndTime    string `json:"end_time"`
+	ErrorCode  string `json:"error_code"`
+	FailReason string `json:"fail_reason"`
 }
 
 type VolumeAttachments struct {

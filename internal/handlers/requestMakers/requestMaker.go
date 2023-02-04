@@ -71,7 +71,7 @@ func parseResponseBody(response *http.Response, parsedBody *interface{}) error {
 		return err
 	}
 	//fmt.Println(string(body))
-	fmt.Println()
+	//fmt.Println()
 	err = json.Unmarshal([]byte(body), parsedBody)
 	return err
 }
@@ -115,17 +115,16 @@ func CreateAndDoRequest(URL string, method httpMethodType, requestBody interface
 		return err
 	}
 	if isHttpRequestSuccess(resp) {
-		if resp.StatusCode != 204 {
+		if parsedResponseBodyPointer != nil && resp.StatusCode != 204 {
 			err = parseResponseBody(resp, &parsedResponseBodyPointer)
 		}
 		return err
 	} else {
-		err = parseResponseBody(resp, &parsedErrorPointer)
-		fmt.Println(parsedErrorPointer)
+		errorData, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return err
 		}
-		return errors.New("An error has occurred\n")
+		return errors.New(string(errorData))
 
 	}
 }
