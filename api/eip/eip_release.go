@@ -21,6 +21,6 @@ func DeletePublicIPByAddress(projectID, publicIpAddress string) error {
 	if eip == nil {
 		return errors.New("No public IP with such address" + publicIpAddress)
 	}
-	err = DeletePublicIP(projectID, eip.Id)
+	err = DeletePublicIP(projectID, eip.ID)
 	return err
 }

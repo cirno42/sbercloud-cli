@@ -1,7 +1,7 @@
 package eipModels
 
 type EipModel struct {
-	Id                  string `json:"id" header:"id"`
+	ID                  string `json:"id" header:"id"`
 	EipType             string `json:"type" header:"type"`
 	PublicIPAddress     string `json:"public_ip_address" header:"public_ip_address"`
 	Status              string `json:"status" header:"status"`
@@ -15,4 +15,19 @@ type EipModel struct {
 	BandwidthID         string `json:"bandwidth_id" header:"bandwidth_id"`
 	BandwidthShareType  string `json:"bandwidth_share_type" header:"bandwidth_share_type"`
 	BandwidthName       string `json:"bandwidth_name" header:"bandwidth_name"`
+}
+
+type ActiveEIP struct {
+	ID                 string `json:"id"`
+	Address            string `json:"address"`
+	InstanceID         string `json:"instance_id"`
+	InstanceType       string `json:"instance_type"`
+	ParentInstanceID   string `json:"parent_instance"`
+	ParentInstanceType string `json:"parent_instance_type"`
+}
+
+type ProjectActiveEIP struct {
+	ProjectID   string      `json:"project_id"`
+	ProjectName string      `json:"project_name"`
+	ActiveIP    []ActiveEIP `json:"active_ip"`
 }

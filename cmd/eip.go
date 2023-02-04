@@ -30,7 +30,7 @@ var eipCmdAssign = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		eip, err := eip.AssignEIP(ProjectID, eipAssignPublicIPType, eipAssignPublicIPVersion, eipAssignBandwidthName, eipAssignBandwidthSize, eipAssignBandwidthShareType)
 		if err != nil {
-			fmt.Printf("ERROR: %s\n", err.Error())
+			beautyfulPrints.PrintError(err)
 		} else {
 			beautyfulPrints.PrintStruct(eip, jmesPathQuery)
 		}
@@ -53,7 +53,7 @@ var eipCmdRelease = &cobra.Command{
 			fmt.Printf("ERROR: public IP address and ID are both not specified\n")
 		}
 		if err != nil {
-			fmt.Printf("%s\n", err)
+			beautyfulPrints.PrintError(err)
 		} else {
 			fmt.Println("Public ip released successfully")
 		}
@@ -77,7 +77,7 @@ var eipCmdGetInfo = &cobra.Command{
 			fmt.Printf("ERROR: public IP address and ID are both not specified\n")
 		}
 		if err != nil {
-			fmt.Printf("ERROR: ", err.Error())
+			beautyfulPrints.PrintError(err)
 		} else {
 			beautyfulPrints.PrintStruct(eipEntity, jmesPathQuery)
 		}
@@ -93,9 +93,33 @@ var eipCmdList = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		eips, err := eip.GetEIPsList(ProjectID, eipCmdListLimit, eipCmdListMarker)
 		if err != nil {
-			fmt.Printf("ERROR: %s\n", err.Error())
+			beautyfulPrints.PrintError(err)
 		} else {
 			beautyfulPrints.PrintStruct(eips, jmesPathQuery)
+		}
+	},
+}
+
+var listActiveIPsAllProject bool
+var eipActiveListCmd = &cobra.Command{
+	Use:   "list-active",
+	Short: "Get list of active Elastic IPs",
+	Long:  `Get list of active Elastic IPs`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if listActiveIPsAllProject {
+			eips, err := eip.GetActiveIPsInAllProjects()
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				beautyfulPrints.PrintStruct(eips, jmesPathQuery)
+			}
+		} else {
+			eips, err := eip.GetActiveIPsInSpecifiedProject(ProjectID)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				beautyfulPrints.PrintStruct(eips, jmesPathQuery)
+			}
 		}
 	},
 }
@@ -108,6 +132,7 @@ func init() {
 	eipCmd.AddCommand(eipCmdRelease)
 	eipCmd.AddCommand(eipCmdGetInfo)
 	eipCmd.AddCommand(eipCmdList)
+	eipCmd.AddCommand(eipActiveListCmd)
 
 	eipCmdAssign.Flags().StringVar(&eipAssignPublicIPType, "eip-type", "5_bgp", "Specifies Type of EIP. The value can be 5_bgp, default is 5_bgp")
 	eipCmdAssign.Flags().IntVar(&eipAssignPublicIPVersion, "ip-version", 4, "Specifies Version of IP. The value can be 4 or 6, default is 4.")
@@ -123,6 +148,8 @@ func init() {
 
 	eipCmdGetInfo.Flags().StringVarP(&eipCmdGetInfoAddress, "address", "a", "", "Specifies IP address of EIP")
 	eipCmdGetInfo.Flags().StringVarP(&eipCmdGetInfoPublicIpID, "id", "i", "", "Specifies ID of EIP")
+
+	eipActiveListCmd.Flags().BoolVarP(&listActiveIPsAllProject, "all-projects", "a", false, "")
 }
 
 //todo: вынести значения по умолчанию в константы

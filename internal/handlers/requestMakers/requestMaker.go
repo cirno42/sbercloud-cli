@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"sbercloud-cli/api/auth/authKeys"
 	"sbercloud-cli/api/auth/core"
 )
@@ -47,7 +48,9 @@ func makeRESTRequest(URL string, method string, body *interface{}) (*http.Reques
 	if body != nil {
 		req.Header.Add("content-type", "application/json")
 	}
-
+	if os.Getenv("SUBPROJECT_ID") != "" {
+		req.Header.Add("X-Project-Id", os.Getenv("SUBPROJECT_ID"))
+	}
 	err = signer.Sign(req)
 	if err != nil {
 		return nil, err

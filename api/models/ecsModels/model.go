@@ -2,7 +2,7 @@ package ecsModels
 
 import "time"
 
-type ECSNetowrk struct {
+type ECSNetwork struct {
 	Version            string `json:"version"`
 	Addr               string `json:"addr"`
 	OSEXTIPSMACMacAddr string `json:"OS-EXT-IPS-MAC:mac_addr"`
@@ -17,9 +17,9 @@ type ECSModel struct {
 		Details string `json:"details"`
 		Created string `json:"created"`
 	} `json:"fault"`
-	Addresses map[string]interface{} `json:"addresses"` //workaround for jmespath query, more info: https://github.com/jmespath/go-jmespath/issues/32
-	ID        string                 `json:"id"`
-	Name      string                 `json:"name"`
+	Addresses map[string][]ECSNetwork `json:"addresses"` //workaround for jmespath query, more info: https://github.com/jmespath/go-jmespath/issues/32
+	ID        string                  `json:"id"`
+	Name      string                  `json:"name"`
 	Flavor    struct {
 		Disk  string `json:"disk"`
 		Vcpus string `json:"vcpus"`
