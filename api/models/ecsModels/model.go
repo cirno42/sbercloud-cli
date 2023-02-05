@@ -30,6 +30,7 @@ type ECSModel struct {
 	AccessIPv4 string `json:"accessIPv4"`
 	AccessIPv6 string `json:"accessIPv6"`
 	Status     string `json:"status"`
+	KeyName    string `json:"key_name"`
 	Image      struct {
 		ID string `json:"id"`
 	} `json:"image"`

@@ -84,6 +84,7 @@ var evsEvsDeleteCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(evsCmd)
+	evsCmd.PersistentFlags().StringVarP(&jmesPathQuery, "query", "q", "", "JMES Path query")
 
 	evsCmd.AddCommand(evsCreateDiskCmd)
 	evsCmd.AddCommand(evsJobInfoCmd)

@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
+	"sbercloud-cli/api/ecs"
 	"sbercloud-cli/api/eip"
+	"sbercloud-cli/api/evs"
 	"sbercloud-cli/api/models/dumpModels"
 	"sbercloud-cli/api/nat"
 	"sbercloud-cli/api/securityGroup"
@@ -42,12 +44,38 @@ var dumpCmd = &cobra.Command{
 		if dumpFileName == "" {
 			dumpFileName = "dump.json"
 		}
+		snatRules, err := nat.ListSNATRules(ProjectID, "", "", 0)
+		if err != nil {
+			fmt.Print(err)
+			return
+		}
+		dnatRules, err := nat.ListDNATRules(ProjectID, "", "", "", "", "", "", "", 0, 0)
+		if err != nil {
+			fmt.Print(err)
+			return
+		}
+		servers, err := ecs.GetECSList(ProjectID)
+		if err != nil {
+			fmt.Print(err)
+			return
+		}
+		disks, err := evs.GetDisksList(ProjectID, "", 0, 0)
+		if err != nil {
+			fmt.Print(err)
+			return
+		}
+		keypairs, err := ecs.ListKeypairs(ProjectID)
 		dump := dumpModels.DumpModel{
 			Vpcs:      vpcs,
 			Subnets:   subnets,
 			Eips:      eips,
 			Nats:      nats,
 			SecGroups: secGroups,
+			SnatRules: snatRules,
+			DnatRules: dnatRules,
+			ECSs:      servers,
+			Disks:     disks,
+			KeyPairs:  keypairs,
 		}
 		outputFile, err := os.Create(dumpFileName)
 		defer outputFile.Close()
