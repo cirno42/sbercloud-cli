@@ -6,16 +6,10 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	"log"
 	"sbercloud-cli/cmd"
 )
 
 func main() {
-	err := godotenv.Load()
-
-	if err != nil {
-		log.Fatal("Error loading .env file")
-		return
-	}
+	_ = godotenv.Load()
 	cmd.Execute()
 }

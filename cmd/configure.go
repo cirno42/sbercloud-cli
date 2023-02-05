@@ -65,7 +65,6 @@ func setConfigManual() {
 	} else if runtime.GOOS == "linux" {
 		fmt.Println("Available values for OUTPUT_FORMAT: YAML/JSON/JSON-C/TABLE")
 	}
-	fmt.Println("Available values for OUTPUT_FORMAT: YAML/JSON/TABLE")
 	fmt.Println("Available values for REGION: Ru-Moscow")
 	for _, key := range keys {
 		fmt.Print(key, "=")
