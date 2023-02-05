@@ -34,4 +34,5 @@ type ImageModel struct {
 	HwFirmwareType     string        `json:"hw_firmware_type"`
 	Status             string        `json:"status"`
 	SupportFcInject    string        `json:"__support_fc_inject"`
+	SupportXenGpuType  string        `json:"__support_xen_gpu_type"`
 }

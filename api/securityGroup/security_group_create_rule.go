@@ -21,8 +21,8 @@ type securityGroupRuleCreateParameters struct {
 	Direction       string `json:"direction"`
 	EtherType       string `json:"ethertype"`
 	Protocol        string `json:"protocol"`
-	PortRangeMin    int    `json:"port_range_min"`
-	PortRangeMax    int    `json:"port_range_max"`
+	PortRangeMin    *int   `json:"port_range_min"`
+	PortRangeMax    *int   `json:"port_range_max"`
 	RemoteIpPrefix  string `json:"remote_ip_prefix"`
 	RemoteGroupId   string `json:"--"` //todo: fix this problem
 }
@@ -30,14 +30,22 @@ type securityGroupRuleCreateParameters struct {
 func CreateSecurityGroupRule(projectID, securityGroupId, description, direction,
 	etherType, protocol string, portRangeMin, portRangeMax int, remoteIpPrefix, remoteGroupId string) (*securityGroupModels.SecurityGroupRuleModel, error) {
 	endpoint := fmt.Sprintf(endpoints.GetEndpointAddress(endpoints.VpcEndpoint)+"/v1/%s/security-group-rules", projectID)
+	var portMin *int
+	if portRangeMin != -1 {
+		portMin = &portRangeMin
+	}
+	var portMax *int
+	if portRangeMax != -1 {
+		portMax = &portRangeMax
+	}
 	sgRuleParams := securityGroupRuleCreateParameters{
 		SecurityGroupId: securityGroupId,
 		Description:     description,
 		Direction:       direction,
 		EtherType:       etherType,
 		Protocol:        protocol,
-		PortRangeMin:    portRangeMin,
-		PortRangeMax:    portRangeMax,
+		PortRangeMin:    portMin,
+		PortRangeMax:    portMax,
 		RemoteIpPrefix:  remoteIpPrefix,
 		RemoteGroupId:   remoteGroupId,
 	}

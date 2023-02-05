@@ -163,7 +163,7 @@ func init() {
 	subnetCreateCmd.Flags().StringVarP(&subnetCreateCIDR, "cidr", "c", "192.168.0.0/16", "Specifies the subnet CIDR block.")
 	subnetCreateCmd.Flags().StringVarP(&subnetCreateGatewayIP, "gateway-ip", "g", "192.168.0.1", "Specifies the gateway of the subnet.")
 	subnetCreateCmd.Flags().BoolVar(&subnetCreateIPv6Enable, "ipv6-en", false, "Specifies whether IPv6 is enabled. If IPv6 is enabled, you can use IPv6 CIDR blocks. The value can be true (enabled) or false (disabled).")
-	subnetCreateCmd.Flags().BoolVar(&subnetCreateDHCPEnable, "dhcp-en", false, "Specifies whether DHCP is enabled for the subnet. The value can be true (enabled) or false (disabled).")
+	subnetCreateCmd.Flags().BoolVar(&subnetCreateDHCPEnable, "dhcp-en", true, "Specifies whether DHCP is enabled for the subnet. The value can be true (enabled) or false (disabled).")
 	subnetCreateCmd.Flags().StringVar(&subnetCreatePrimaryDNS, "primary-dns", "", "Specifies the IP address of DNS server 1 on the subnet.")
 	subnetCreateCmd.Flags().StringVar(&subnetCreateSecondaryDNS, "secondary-dns", "", "Specifies the IP address of DNS server 2 on the subnet.")
 	subnetCreateCmd.Flags().StringVar(&subnetCreateAvailabilityZones, "availability-zones", "", "Specifies the AZ to which the subnet belongs, which can be obtained from endpoints.")

@@ -114,7 +114,7 @@ func GetActiveIPsInAllProjects() ([]eipModels.ProjectActiveEIP, error) {
 	}
 	activeIPs := make([]eipModels.ProjectActiveEIP, len(projects))
 	for i, project := range projects {
-		_ = os.Setenv("SUBPROJECT_ID", project.ID)
+		_ = os.Setenv("PROJECT_ID", project.ID)
 		ips, err := GetActiveIPsInSpecifiedProject(project.ID)
 		if err != nil {
 			return nil, err

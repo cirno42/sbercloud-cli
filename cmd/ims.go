@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"sbercloud-cli/api/ims"
 	"sbercloud-cli/internal/beautyfulPrints"
@@ -12,7 +11,6 @@ var imsCmd = &cobra.Command{
 	Short: "Commands to interact with IMS",
 	Long:  `Commands to interact with IMS`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("ims called")
 	},
 }
 
