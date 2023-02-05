@@ -128,6 +128,8 @@ var natDeleteCmd = &cobra.Command{
 		}
 		if err != nil {
 			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
 		}
 
 	},

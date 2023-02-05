@@ -52,7 +52,7 @@ func GetActiveIPsInSpecifiedProject(projectID string) ([]eipModels.ActiveEIP, er
 	if err != nil {
 		return nil, err
 	}
-	servers, err := ecs.GetECSList(projectID)
+	servers, err := ecs.GetECSList(projectID, 0, 0)
 	for i := 0; i < len(servers); i++ {
 		for _, network := range servers[i].Addresses {
 			for _, net := range network {

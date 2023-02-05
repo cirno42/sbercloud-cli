@@ -83,16 +83,12 @@ func setConfigManual() {
 	}
 }
 
-func editConfig() {
-
-}
-
 func init() {
 	RootCmd.AddCommand(configureCmd)
 
-	configureCmd.Flags().StringVar(&setOutputFormat, "set-output-format", "", "")
-	configureCmd.Flags().StringVar(&setSecretKey, "set-secret-key", "", "")
-	configureCmd.Flags().StringVar(&setAccessKey, "set-access-key", "", "")
-	configureCmd.Flags().StringVar(&setProjectId, "set-project-id", "", "")
-	configureCmd.Flags().StringVar(&setRegion, "set-region", "", "")
+	configureCmd.Flags().StringVar(&setOutputFormat, "set-output-format", "", "Specifies output format")
+	configureCmd.Flags().StringVar(&setSecretKey, "set-secret-key", "", "Specifies secret key")
+	configureCmd.Flags().StringVar(&setAccessKey, "set-access-key", "", "Specifies access key")
+	configureCmd.Flags().StringVar(&setProjectId, "set-project-id", "", "Specifies project ID")
+	configureCmd.Flags().StringVar(&setRegion, "set-region", "", "Specifies endpoint region")
 }

@@ -30,12 +30,14 @@ var ecsFlavorListCmd = &cobra.Command{
 	},
 }
 
+var ecsListOffset int
+var ecsListLimit int
 var ecsListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Get ECS list",
 	Long:  `Get ECS list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		ecs, err := ecs.GetECSList(ProjectID)
+		ecs, err := ecs.GetECSList(ProjectID, ecsListOffset, ecsListLimit)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
 		} else {
@@ -161,8 +163,8 @@ var ecsBatchAddNicsSubnetIds []string
 var ecsBatchAddNicsServerId string
 var ecsBatchAddNicsCmd = &cobra.Command{
 	Use:   "add-nics",
-	Short: "This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time",
-	Long:  `This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time`,
+	Short: "This command is used to add nics to ECS",
+	Long:  `This command is used to add nics to ECS`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := ecs.AddNicsBatchToEcs(ProjectID, ecsBatchAddNicsServerId, ecsBatchAddNicsSubnetIds)
 		if err != nil {
@@ -177,8 +179,8 @@ var ecsBatchDeleteNicsSubnetIds []string
 var ecsBatchDeleteNicsServerId string
 var ecsBatchDeleteNicsCmd = &cobra.Command{
 	Use:   "delete-nics",
-	Short: "This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time",
-	Long:  `This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time`,
+	Short: "This command is used to uninstall and delete one or multiple NICs from an ECS.",
+	Long:  `This command is used to uninstall and delete one or multiple NICs from an ECS.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := ecs.DeleteNicsBatchToEcs(ProjectID, ecsBatchDeleteNicsServerId, ecsBatchDeleteNicsSubnetIds)
 		if err != nil {
@@ -192,8 +194,8 @@ var ecsBatchDeleteNicsCmd = &cobra.Command{
 var ecsJobId string
 var jobInfoCmd = &cobra.Command{
 	Use:   "job-info",
-	Short: "This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time",
-	Long:  `This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time`,
+	Short: "This command is used to get info about job",
+	Long:  `This command is used to get info about job`,
 	Run: func(cmd *cobra.Command, args []string) {
 		job, err := ecs.GetInfoAboutTask(ProjectID, ecsJobId)
 		if err != nil {
@@ -290,8 +292,8 @@ var ecsBindPrivateIpAddress string
 var ecsBindPrivateIpReverseBinding bool
 var ecsBindPrivateIpCmd = &cobra.Command{
 	Use:   "bind-private-ip",
-	Short: "This command is used to query NICs of an ECS.",
-	Long:  `This command is used to query NICs of an ECS.`,
+	Short: "This command is used to configure a virtual IP address for an ECS NIC.",
+	Long:  `This command is used to configure a virtual IP address for an ECS NIC.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		disks, err := ecs.BindPrivateIp(ProjectID, ecsBindPrivateIpNicId, ecsBindPrivateIpSubnetId, ecsBindPrivateIpAddress, ecsBindPrivateIpReverseBinding)
 		if err != nil {
@@ -305,8 +307,8 @@ var ecsBindPrivateIpCmd = &cobra.Command{
 var ecsUnbindPrivateIpNicId string
 var ecsUnbindPrivateIpCmd = &cobra.Command{
 	Use:   "unbind-private-ip",
-	Short: "This command is used to query NICs of an ECS.",
-	Long:  `This command is used to query NICs of an ECS.`,
+	Short: "This command is used to configure a virtual IP address for an ECS NIC",
+	Long:  `This command is used to configure a virtual IP address for an ECS NIC`,
 	Run: func(cmd *cobra.Command, args []string) {
 		disks, err := ecs.BindPrivateIp(ProjectID, ecsBindPrivateIpNicId, "", "", false) //API for unbind IP is same as for bind, but all fields must be empty
 		if err != nil {
@@ -320,8 +322,8 @@ var ecsUnbindPrivateIpCmd = &cobra.Command{
 var createKeypairKeyName string
 var ecsCreateKeypairCmd = &cobra.Command{
 	Use:   "create-keypair",
-	Short: "This command is used to query NICs of an ECS.",
-	Long:  `This command is used to query NICs of an ECS.`,
+	Short: "This command is used to create key pair.",
+	Long:  `This command is used to create key pair.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		key, err := ecs.CreateKeyPair(ProjectID, createKeypairKeyName)
 		if err != nil {
@@ -336,8 +338,8 @@ var importKeypairKeyName string
 var importKeypairKeyPublicKey string
 var ecsImportKeypairCmd = &cobra.Command{
 	Use:   "import-keypair",
-	Short: "This command is used to query NICs of an ECS.",
-	Long:  `This command is used to query NICs of an ECS.`,
+	Short: "This command is used to import key pair.",
+	Long:  `This command is used to import key pair.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		key, err := ecs.ImportKeyPair(ProjectID, importKeypairKeyName, importKeypairKeyPublicKey)
 		if err != nil {
@@ -350,8 +352,8 @@ var ecsImportKeypairCmd = &cobra.Command{
 
 var ecsListKeypairCmd = &cobra.Command{
 	Use:   "list-keypair",
-	Short: "This command is used to query NICs of an ECS.",
-	Long:  `This command is used to query NICs of an ECS.`,
+	Short: "This command is used to list existing key pairs.",
+	Long:  `This command is used to list existing key pairs.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		keys, err := ecs.ListKeypairs(ProjectID)
 		if err != nil {
@@ -365,8 +367,8 @@ var ecsListKeypairCmd = &cobra.Command{
 var getKeypairKeyName string
 var ecsGetKeypairCmd = &cobra.Command{
 	Use:   "get-keypair",
-	Short: "This command is used to query NICs of an ECS.",
-	Long:  `This command is used to query NICs of an ECS.`,
+	Short: "This command is used to query key pair.",
+	Long:  `This command is used to query key pair.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		key, err := ecs.GetKeypair(ProjectID, getKeypairKeyName)
 		if err != nil {
@@ -380,8 +382,8 @@ var ecsGetKeypairCmd = &cobra.Command{
 var deleteKeypairKeyName string
 var ecsDeleteKeypairCmd = &cobra.Command{
 	Use:   "delete-keypair",
-	Short: "This command is used to query NICs of an ECS.",
-	Long:  `This command is used to query NICs of an ECS.`,
+	Short: "This command is used to delete key pair.",
+	Long:  `This command is used to delete key pair.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := ecs.DeleteKeypair(ProjectID, deleteKeypairKeyName)
 		if err != nil {
@@ -399,8 +401,8 @@ var changeFlavorListMarker string
 var changeFlavorListLimit int
 var ecsChangeFlavorListCmd = &cobra.Command{
 	Use:   "change-flavor-list",
-	Short: "This command is used to query NICs of an ECS.",
-	Long:  `This command is used to query NICs of an ECS.`,
+	Short: "This command is used to list possible flavors to change of an ECS.",
+	Long:  `This command is used to list possible flavors to change of an ECS.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		flavors, err := ecs.ListResizeFlavors(ProjectID, changeFlavorListSortKey, changeFlavorListSortDir, changeFlavorListMarker, changeFlavorListEcsID, changeFlavorListLimit)
 		if err != nil {
@@ -416,8 +418,8 @@ var changeFlavorFlavorRef string
 var changeFlavorDryRun bool
 var ecsChangeFlavorCmd = &cobra.Command{
 	Use:   "change-flavor",
-	Short: "This command is used to query NICs of an ECS.",
-	Long:  `This command is used to query NICs of an ECS.`,
+	Short: "This command is used to change flavor of an ECS.",
+	Long:  `This command is used to change flavor of an ECS.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := ecs.ResizeECS(ProjectID, changeFlavorEcsID, changeFlavorFlavorRef, changeFlavorDryRun)
 		if err != nil {
@@ -458,32 +460,35 @@ func init() {
 	ecsCmd.AddCommand(ecsChangeFlavorListCmd)
 	ecsCmd.AddCommand(ecsChangeFlavorCmd)
 
+	ecsListCmd.Flags().IntVarP(&ecsListLimit, "limit", "l", 0, "Specifies the maximum number of ECSs on one page.")
+	ecsListCmd.Flags().IntVarP(&ecsListOffset, "offset", "o", 0, "Specifies a page number.")
+
 	ecsFlavorListCmd.Flags().StringVarP(&ecsFlavorListAvailabilityZone, "availability_zone", "a", "", "")
 
-	ecsInfoCmd.Flags().StringVarP(&ecsGetInfoId, "id", "i", "", "")
+	ecsInfoCmd.Flags().StringVarP(&ecsGetInfoId, "id", "i", "", "Specifies the ECS ID.")
 
-	ecsDeleteCmd.Flags().StringSliceVarP(&ecsDeleteIds, "id", "i", nil, "")
-	ecsDeleteCmd.Flags().BoolVar(&ecsDeletePublicIp, "del-ip", false, "")
-	ecsDeleteCmd.Flags().BoolVar(&ecsDeleteVolume, "del-vol", false, "")
+	ecsDeleteCmd.Flags().StringSliceVarP(&ecsDeleteIds, "id", "i", nil, "Specifies the ID of the ECS to be deleted.")
+	ecsDeleteCmd.Flags().BoolVar(&ecsDeletePublicIp, "del-ip", false, "Specifies whether to delete the EIP bound to the ECS when deleting the ECS. If you do not want to delete the EIP, the system only unbinds the EIP from the ECS and reserves the IP address.")
+	ecsDeleteCmd.Flags().BoolVar(&ecsDeleteVolume, "del-vol", false, "Specifies whether to delete the data disks attached to an ECS when deleting the ECS. If you set the parameter value to false, the system only detaches the disks from the ECS and reserves the disks.")
 
-	ecsCreateCmd.Flags().StringVar(&ecsCreateVpcID, "vpc-id", "", "")
-	ecsCreateCmd.Flags().StringVar(&ecsCreateImageRef, "image-ref", "", "")
-	ecsCreateCmd.Flags().StringVar(&ecsCreateName, "name", "", "")
-	ecsCreateCmd.Flags().StringVar(&ecsCreateFlavorRef, "flavor-ref", "", "")
-	ecsCreateCmd.Flags().StringVar(&ecsCreateRootVolumeType, "root-volume-type", "", "")
-	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateSubnetIds, "subnet-ids", nil, "")
-	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateSecGroupIds, "sg-ids", nil, "")
-	ecsCreateCmd.Flags().StringVar(&ecsCreateAdminPass, "admin-pass", "", "")
-	ecsCreateCmd.Flags().StringVar(&ecsCreateEipId, "eip-id", "", "")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateVpcID, "vpc-id", "", "Specifies the ID of the VPC to which the ECS belongs. The value is in the format of the UUID.")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateImageRef, "image-ref", "", "Specifies the ID of the system image used for creating ECSs.")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateName, "name", "", "Specifies the ECS name.")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateFlavorRef, "flavor-ref", "", "Specifies the flavor ID of the ECS to be created.")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateRootVolumeType, "root-volume-type", "SAS", "Specifies the ECS system disk type, which must be one of available disk types.")
+	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateSubnetIds, "subnet-ids", nil, "Specifies the subnets of the ECS.")
+	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateSecGroupIds, "sg-ids", nil, "Specifies the security groups of the ECS.")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateAdminPass, "admin-pass", "", "Specifies the initial login password of the administrator account for logging in to an ECS using password authentication")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateEipId, "eip-id", "", "Specifies the EIP ID")
 	ecsCreateCmd.Flags().IntVar(&ecsCreateEipBandwidthSize, "eip-size", 1, "Specifies the bandwidth size. Specifies the bandwidth (Mbit/s). The value ranges from 1 to 300.")
 	ecsCreateCmd.Flags().StringVar(&ecsCreateEipBandwidthType, "eip-bandwidth", "PER", "Specifies the bandwidth sharing type. Enumerated values: PER (indicates exclusive bandwidth) and WHOLE (indicates sharing)")
 	ecsCreateCmd.Flags().StringVar(&ecsCreateEipType, "eip-type", "5_bgp", "Specifies Type of EIP. The value can be 5_bgp, default is 5_bgp")
-	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateVolumeTypes, "data-volume-types", nil, "")
-	ecsCreateCmd.Flags().IntSliceVar(&ecsCreateVolumeSizes, "data-volume-sizes", nil, "")
+	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateVolumeTypes, "data-volume-types", nil, "Specifies the type of the ECS data disk, which must be one of available disk types.")
+	ecsCreateCmd.Flags().IntSliceVar(&ecsCreateVolumeSizes, "data-volume-sizes", nil, "Specifies the data disk size, in GB. The value ranges from 10 to 32768.")
 	ecsCreateCmd.Flags().IntVar(&ecsCreateRootVolumeSize, "root-volume-size", 0, "Specifies the system disk size, in GB. The value ranges from 1 to 1024.")
-	ecsCreateCmd.Flags().IntVar(&ecsCreateCount, "count", 1, "")
+	ecsCreateCmd.Flags().IntVar(&ecsCreateCount, "count", 1, "Specifies the number of ECSs to be created.")
 	ecsCreateCmd.Flags().StringVar(&ecsCreateAvailabilityZone, "az", "", "")
-	ecsCreateCmd.Flags().StringVar(&ecsCreateKeyName, "key-name", "", "")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateKeyName, "key-name", "", "Specifies the name of the SSH key used for logging in to the ECS.")
 
 	ecsBatchStartCmd.Flags().StringSliceVarP(&ecsBatchStartServerIds, "id", "i", nil, "Specifies ECS IDs")
 
@@ -523,10 +528,10 @@ func init() {
 
 	ecsUnbindPrivateIpCmd.Flags().StringVarP(&ecsUnbindPrivateIpNicId, "nic-id", "n", "", "")
 
-	ecsCreateKeypairCmd.Flags().StringVarP(&createKeypairKeyName, "name", "n", "", "")
+	ecsCreateKeypairCmd.Flags().StringVarP(&createKeypairKeyName, "name", "n", "", "Specifies the name of key pair")
 
-	ecsImportKeypairCmd.Flags().StringVarP(&createKeypairKeyName, "name", "n", "", "")
-	ecsImportKeypairCmd.Flags().StringVarP(&createKeypairKeyName, "public-ip", "p", "", "")
+	ecsImportKeypairCmd.Flags().StringVarP(&importKeypairKeyName, "name", "n", "", "")
+	ecsImportKeypairCmd.Flags().StringVarP(&importKeypairKeyPublicKey, "public-key", "p", "", "")
 
 	ecsGetKeypairCmd.Flags().StringVarP(&getKeypairKeyName, "name", "n", "", "")
 
