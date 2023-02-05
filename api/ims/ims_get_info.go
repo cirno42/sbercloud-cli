@@ -12,7 +12,10 @@ type getImagesListResponse struct {
 }
 
 func GetImagesList(platform string) ([]imsModels.ImageModel, error) {
-	endpoint := fmt.Sprintf(endpoints.GetEndpointAddress(endpoints.ImsEndpoint)+"/v2/cloudimages?__platform=%s", platform)
+	endpoint := fmt.Sprintf(endpoints.GetEndpointAddress(endpoints.ImsEndpoint) + "/v2/cloudimages?")
+	if platform != "" {
+		endpoint += "__platform=" + platform
+	}
 	var imgs getImagesListResponse
 	err := requestMakers.CreateAndDoRequest(endpoint, requestMakers.HTTP_METHOD_GET, nil, &imgs, nil)
 	return imgs.Images, err
