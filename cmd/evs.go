@@ -82,6 +82,22 @@ var evsEvsDeleteCmd = &cobra.Command{
 	},
 }
 
+var evsExpandVolumeId string
+var evsExpandNewSize int
+var evsExpandCmd = &cobra.Command{
+	Use:   "expand",
+	Short: "This command is used to expand the capacity of an EVS disk.",
+	Long:  `This command is used to expand the capacity of an EVS disk.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := evs.ExpandDisk(ProjectID, evsExpandVolumeId, evsExpandNewSize)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(evsCmd)
 	evsCmd.PersistentFlags().StringVarP(&jmesPathQuery, "query", "q", "", "JMES Path query")
@@ -90,6 +106,7 @@ func init() {
 	evsCmd.AddCommand(evsJobInfoCmd)
 	evsCmd.AddCommand(evsEvsGetListCmd)
 	evsCmd.AddCommand(evsEvsDeleteCmd)
+	evsCmd.AddCommand(evsExpandCmd)
 
 	evsCreateDiskCmd.Flags().IntVarP(&evsCreateCount, "count", "c", 1, "")
 	evsCreateDiskCmd.Flags().IntVarP(&evsCreateSize, "size", "s", 0, "")
@@ -105,4 +122,7 @@ func init() {
 	evsEvsGetListCmd.Flags().StringVarP(&evsListStatus, "status", "s", "", "")
 
 	evsEvsDeleteCmd.Flags().StringVarP(&evsDeleteVolumeId, "id", "i", "", "")
+
+	evsExpandCmd.Flags().StringVarP(&evsExpandVolumeId, "id", "i", "", "Specifies the ID of the disk.")
+	evsExpandCmd.Flags().IntVarP(&evsExpandNewSize, "size", "s", 0, "Specifies the size of the disk after capacity expansion, in GB.")
 }
