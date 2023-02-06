@@ -430,6 +430,38 @@ var ecsChangeFlavorCmd = &cobra.Command{
 	},
 }
 
+var addSGEcsID string
+var addSGName string
+var ecsAddSGCmd = &cobra.Command{
+	Use:   "add-sg",
+	Short: "This API is used to add an ECS to a security group.",
+	Long:  `This API is used to add an ECS to a security group.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := ecs.AddSecurityGroup(ProjectID, addSGEcsID, addSGName)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
+var removeSGEcsID string
+var removeSGName string
+var ecsDeleteSGCmd = &cobra.Command{
+	Use:   "delete-sg",
+	Short: "This API is used to delete an ECS from a security group.",
+	Long:  `This API is used to delete an ECS from a security group.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := ecs.RemoveSecurityGroup(ProjectID, removeSGEcsID, removeSGName)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(ecsCmd)
 	ecsCmd.PersistentFlags().StringVarP(&jmesPathQuery, "query", "q", "", "JMES Path query")
@@ -459,6 +491,8 @@ func init() {
 	ecsCmd.AddCommand(ecsDeleteKeypairCmd)
 	ecsCmd.AddCommand(ecsChangeFlavorListCmd)
 	ecsCmd.AddCommand(ecsChangeFlavorCmd)
+	ecsCmd.AddCommand(ecsAddSGCmd)
+	ecsCmd.AddCommand(ecsDeleteSGCmd)
 
 	ecsListCmd.Flags().IntVarP(&ecsListLimit, "limit", "l", 0, "Specifies the maximum number of ECSs on one page.")
 	ecsListCmd.Flags().IntVarP(&ecsListOffset, "offset", "o", 0, "Specifies a page number.")
@@ -546,4 +580,10 @@ func init() {
 	ecsChangeFlavorCmd.Flags().StringVarP(&changeFlavorEcsID, "ecs-id", "e", "", "")
 	ecsChangeFlavorCmd.Flags().StringVarP(&changeFlavorFlavorRef, "flavor-id", "f", "", "")
 	ecsChangeFlavorCmd.Flags().BoolVarP(&changeFlavorDryRun, "dry-run", "d", false, "")
+
+	ecsAddSGCmd.Flags().StringVarP(&addSGEcsID, "ecs-id", "e", "", "Specifies the ECS ID.")
+	ecsAddSGCmd.Flags().StringVarP(&addSGName, "sg-name", "s", "", "Specifies the UUID or name of the security group to which the ECS is added. The configuration takes effect for the NICs on the ECS.")
+
+	ecsDeleteSGCmd.Flags().StringVarP(&removeSGEcsID, "ecs-id", "e", "", "Specifies the ECS ID.")
+	ecsDeleteSGCmd.Flags().StringVarP(&removeSGName, "sg-name", "s", "", "Specifies the UUID or name of the security group from which the ECS is removed. The configuration takes effect for the NICs on the ECS.")
 }
