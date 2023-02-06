@@ -29,7 +29,7 @@ func ListSNATRules(projectID, natGatewayId, ipAddress string, limit int) ([]natM
 		endpoint += "&floating_ip_address=" + ipAddress
 	}
 	var resp snatRulesListResp
-	err := requestMakers.CreateAndDoRequest(endpoint, requestMakers.HTTP_METHOD_GET, nil, &resp, nil)
+	err := requestMakers.CreateAndDoRequestInSpecifiedProject(endpoint, projectID, requestMakers.HTTP_METHOD_GET, nil, &resp)
 	return resp.SnatRules, err
 }
 

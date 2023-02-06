@@ -22,7 +22,7 @@ const (
 	HTTP_METHOD_PUT
 )
 
-func makeRESTRequest(URL string, method string, body *interface{}) (*http.Request, error) {
+func makeRESTRequest(URL string, projectID, method string, body *interface{}) (*http.Request, error) {
 
 	var requestBody []byte
 	var err error
@@ -48,9 +48,7 @@ func makeRESTRequest(URL string, method string, body *interface{}) (*http.Reques
 	if body != nil {
 		req.Header.Add("content-type", "application/json")
 	}
-	if os.Getenv("PROJECT_ID") != "" {
-		req.Header.Add("X-Project-Id", os.Getenv("PROJECT_ID"))
-	}
+	req.Header.Add("X-Project-Id", projectID)
 	err = signer.Sign(req)
 	if err != nil {
 		return nil, err
@@ -99,11 +97,18 @@ func httpMethodToString(methodType httpMethodType) string {
 
 func CreateAndDoRequest(URL string, method httpMethodType, requestBody interface{},
 	parsedResponseBodyPointer interface{}, parsedErrorPointer interface{}) error {
+	projectID := os.Getenv("PROJECT_ID")
+	err := CreateAndDoRequestInSpecifiedProject(URL, projectID, method, requestBody, parsedResponseBodyPointer)
+	return err
+}
+
+func CreateAndDoRequestInSpecifiedProject(URL, projectID string, method httpMethodType, requestBody interface{},
+	parsedResponseBodyPointer interface{}) error {
 	methodString := httpMethodToString(method)
 	if methodString == "" {
 		return errors.New("Wrong http method")
 	}
-	req, err := makeRESTRequest(URL, methodString, &requestBody)
+	req, err := makeRESTRequest(URL, projectID, methodString, &requestBody)
 	if err != nil {
 		return err
 	}

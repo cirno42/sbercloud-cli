@@ -28,7 +28,7 @@ func GetECSList(projectID string, offset, limit int) ([]ecsModels.ECSModel, erro
 		endpoint += "&limit=" + s
 	}
 	var ecsArray listEcsQueryingResponse
-	err := requestMakers.CreateAndDoRequest(endpoint, requestMakers.HTTP_METHOD_GET, nil, &ecsArray, nil)
+	err := requestMakers.CreateAndDoRequestInSpecifiedProject(endpoint, projectID, requestMakers.HTTP_METHOD_GET, nil, &ecsArray)
 	return ecsArray.Servers, err
 }
 

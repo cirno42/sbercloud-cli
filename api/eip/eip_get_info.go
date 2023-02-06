@@ -2,13 +2,14 @@ package eip
 
 import (
 	"fmt"
-	"os"
 	"sbercloud-cli/api/ecs"
 	"sbercloud-cli/api/endpoints"
 	"sbercloud-cli/api/iam"
 	"sbercloud-cli/api/models/eipModels"
+	"sbercloud-cli/api/models/iamModels"
 	"sbercloud-cli/api/nat"
 	"sbercloud-cli/internal/handlers/requestMakers"
+	"sync"
 )
 
 type eipQueryingResponse struct {
@@ -42,7 +43,7 @@ func GetEIPInfo(projectID, publicIpId string) (*eipModels.EipModel, error) {
 func GetEIPsList(projectID string, limit int, marker string) ([]eipModels.EipModel, error) {
 	endpoint := fmt.Sprintf(endpoints.GetEndpointAddress(endpoints.VpcEndpoint)+"/v1/%s/publicips?limit=%d&marker=%s", projectID, limit, marker)
 	var ipsArray eipQueryingResponse
-	err := requestMakers.CreateAndDoRequest(endpoint, requestMakers.HTTP_METHOD_GET, nil, &ipsArray, nil)
+	err := requestMakers.CreateAndDoRequestInSpecifiedProject(endpoint, projectID, requestMakers.HTTP_METHOD_GET, nil, &ipsArray)
 	return ipsArray.PublicIPs, err
 }
 
@@ -113,17 +114,19 @@ func GetActiveIPsInAllProjects() ([]eipModels.ProjectActiveEIP, error) {
 		return nil, err
 	}
 	activeIPs := make([]eipModels.ProjectActiveEIP, len(projects))
+	var wg sync.WaitGroup
 	for i, project := range projects {
-		_ = os.Setenv("PROJECT_ID", project.ID)
-		ips, err := GetActiveIPsInSpecifiedProject(project.ID)
-		if err != nil {
-			return nil, err
-		}
-		activeIPs[i] = eipModels.ProjectActiveEIP{
-			ProjectID:   project.ID,
-			ProjectName: project.Name,
-			ActiveIP:    ips,
-		}
+		wg.Add(1)
+		go func(activeIP *eipModels.ProjectActiveEIP, p iamModels.ProjectModel) {
+			defer wg.Done()
+			ips, _ := GetActiveIPsInSpecifiedProject(p.ID)
+			*activeIP = eipModels.ProjectActiveEIP{
+				ProjectID:   p.ID,
+				ProjectName: p.Name,
+				ActiveIP:    ips,
+			}
+		}(&activeIPs[i], project)
 	}
+	wg.Wait()
 	return activeIPs, err
 }

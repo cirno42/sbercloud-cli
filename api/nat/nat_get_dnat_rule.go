@@ -48,7 +48,7 @@ func ListDNATRules(projectID, natID, portID, eipId, eipAddress, protocol, intern
 		endpoint += "&external_service_port_range=" + externalPortRange
 	}
 	var resp listDNATRules
-	err := requestMakers.CreateAndDoRequest(endpoint, requestMakers.HTTP_METHOD_GET, nil, &resp, nil)
+	err := requestMakers.CreateAndDoRequestInSpecifiedProject(endpoint, projectID, requestMakers.HTTP_METHOD_GET, nil, &resp)
 	return resp.DnatRules, err
 }
 
