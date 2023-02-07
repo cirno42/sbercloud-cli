@@ -18,7 +18,7 @@ type vpcCreationQuery struct {
 	Vpc vpcCreationParameters `json:"vpc"`
 }
 
-func CreateVpc(projectID, name, description, cidr string) (*vpcModels.VpcEntity, error) {
+func CreateVpc(projectID, name, description, cidr string) (*vpcModels.VpcModel, error) {
 	endpoint := fmt.Sprintf(endpoints.GetEndpointAddress(endpoints.VpcEndpoint)+"/v1/%s/vpcs", projectID)
 
 	vpc := vpcCreationParameters{
@@ -30,5 +30,5 @@ func CreateVpc(projectID, name, description, cidr string) (*vpcModels.VpcEntity,
 	var createdVpc vpcModels.VpcEntity
 	var errorResp errorHandlers.ErrorResponse
 	err := requestMakers.CreateAndDoRequest(endpoint, requestMakers.HTTP_METHOD_POST, &vpcQuery, &createdVpc, &errorResp)
-	return &createdVpc, err
+	return &createdVpc.Vpc, err
 }

@@ -36,7 +36,7 @@ var restoreCmd = &cobra.Command{
 				fmt.Println(err)
 				return
 			}
-			vpcKeysMapping[oldVpc.Id] = newVpc.Vpc.Id
+			vpcKeysMapping[oldVpc.Id] = newVpc.Id
 		}
 		oldSubnets := dump.Subnets
 		for _, oldSubnet := range oldSubnets {
@@ -47,7 +47,7 @@ var restoreCmd = &cobra.Command{
 				fmt.Println(err)
 				return
 			}
-			subnetKeysMapping[oldSubnet.Id] = newSubnet.Subnet.Id
+			subnetKeysMapping[oldSubnet.Id] = newSubnet.Id
 		}
 
 		oldEips := dump.Eips

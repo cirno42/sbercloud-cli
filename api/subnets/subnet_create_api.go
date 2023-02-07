@@ -26,7 +26,7 @@ type subnetCreationParameters struct {
 }
 
 func CreateSubnet(projectID, name, description, cidr, gatewayIp string, ipv6Enable, dhcpEnable bool,
-	primaryDns, secondaryDns string, dnsList []string, availabilityZones, vpcId string) (*subnetModels.SubnetEntity, error) {
+	primaryDns, secondaryDns string, dnsList []string, availabilityZones, vpcId string) (*subnetModels.SubnetModel, error) {
 
 	endpoint := fmt.Sprintf(endpoints.GetEndpointAddress(endpoints.VpcEndpoint)+"/v1/%s/subnets", projectID)
 	subnetParameters := subnetCreationParameters{
@@ -45,5 +45,5 @@ func CreateSubnet(projectID, name, description, cidr, gatewayIp string, ipv6Enab
 	subnetQuery := subnetCreationQuery{Subnet: subnetParameters}
 	var createdSubnet subnetModels.SubnetEntity
 	err := requestMakers.CreateAndDoRequest(endpoint, requestMakers.HTTP_METHOD_POST, &subnetQuery, &createdSubnet, nil)
-	return &createdSubnet, err
+	return &createdSubnet.Subnet, err
 }
