@@ -101,7 +101,7 @@ var natGetInfoCmd = &cobra.Command{
 		} else if natGetInfoNatName != "" {
 			natEntity, err = nat.GetNatByName(ProjectID, natGetInfoNatName)
 		} else {
-			err = errors.New("NAT name and id both are not specified")
+			err = errors.New("{\"error\" : \"NAT name and id both are not specified\"}")
 		}
 		if err != nil {
 			beautyfulPrints.PrintError(err)
@@ -124,7 +124,7 @@ var natDeleteCmd = &cobra.Command{
 		} else if natDeleteNatName != "" {
 			err = nat.DeleteNatByName(ProjectID, natDeleteNatName)
 		} else {
-			err = errors.New("NAT name and id both are not specified")
+			err = errors.New("{\"error\" : \"NAT name and id both are not specified\"}")
 		}
 		if err != nil {
 			beautyfulPrints.PrintError(err)

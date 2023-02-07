@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"sbercloud-cli/api/availabilityZone"
 	"sbercloud-cli/internal/beautyfulPrints"
@@ -22,7 +21,7 @@ var azGetZonesCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		zones, err := availabilityZone.GetZonesList(ProjectID)
 		if err != nil {
-			fmt.Printf("ERROR: %s\n", err.Error())
+			beautyfulPrints.PrintError(err)
 		} else {
 			beautyfulPrints.PrintStruct(zones, jmesPathQuery)
 		}

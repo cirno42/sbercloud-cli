@@ -51,7 +51,7 @@ var subnetCreateCmd = &cobra.Command{
 		sn, err := subnets.CreateSubnet(ProjectID, subnetCreateName, subnetCreateDescription, subnetCreateCIDR, subnetCreateGatewayIP,
 			subnetCreateIPv6Enable, subnetCreateDHCPEnable, subnetCreatePrimaryDNS, subnetCreateSecondaryDNS, nil, subnetCreateAvailabilityZones, vpcId)
 		if err != nil {
-			fmt.Println(err)
+			beautyfulPrints.PrintError(err)
 		} else {
 			beautyfulPrints.PrintStruct(sn, jmesPathQuery)
 		}
@@ -69,7 +69,7 @@ var subnetGetListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		subnets, err := subnets.GetSubnetsList(ProjectID, subnetListLimit, subnetListMarker, subnetListVpcID)
 		if err != nil {
-			fmt.Println(err)
+			beautyfulPrints.PrintError(err)
 		} else {
 			beautyfulPrints.PrintStruct(subnets, jmesPathQuery)
 		}
@@ -91,7 +91,7 @@ var subnetGetInfoCmd = &cobra.Command{
 			subnet, err = subnets.GetSubnetByName(ProjectID, subnetInfoSubnetName)
 		}
 		if err != nil {
-			fmt.Println(err)
+			beautyfulPrints.PrintError(err)
 		} else {
 			beautyfulPrints.PrintStruct(subnet, jmesPathQuery)
 		}
@@ -114,7 +114,7 @@ var subnetUpdateCmd = &cobra.Command{
 		sn, err := subnets.UpdateSubnet(ProjectID, subnetUpdateName, subnetUpdateDescription, subnetUpdateIPv6Enable,
 			subnetUpdateDHCPEnable, subnetUpdatePrimaryDNS, subnetUpdateSecondaryDNS, subnetUpdateVpcId, subnetUpdateSubnetId)
 		if err != nil {
-			fmt.Println(err)
+			beautyfulPrints.PrintError(err)
 		} else {
 			beautyfulPrints.PrintStruct(sn, jmesPathQuery)
 		}
@@ -142,12 +142,12 @@ var subnetDeleteCmd = &cobra.Command{
 			return
 		}
 		if err != nil {
-			fmt.Println("ERROR: " + err.Error())
+			beautyfulPrints.PrintError(err)
 			return
 		}
 		err = subnets.DeleteSubnet(ProjectID, subnet.VpcId, subnet.Id)
 		if err != nil {
-			fmt.Println("ERROR: " + err.Error())
+			beautyfulPrints.PrintError(err)
 		}
 	},
 }

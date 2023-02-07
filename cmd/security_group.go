@@ -47,7 +47,7 @@ var sgGetInfoCmd = &cobra.Command{
 		} else if sgGetInfoName != "" {
 			sg, err = securityGroup.GetInfoAboutSecurityGroupByName(ProjectID, sgGetInfoName)
 		} else {
-			beautyfulPrints.PrintError(errors.New("ID and name are both not specified"))
+			err = errors.New("{\"error\" : \"name and id of security group are both not specified\"}")
 		}
 		if err != nil {
 			beautyfulPrints.PrintError(err)
@@ -87,12 +87,12 @@ var sgDeleteCmd = &cobra.Command{
 		} else if sgDeleteName != "" {
 			err = securityGroup.DeleteSecurityGroupByName(ProjectID, sgDeleteName)
 		} else {
-			err = errors.New("ID and name are both not specified")
+			err = errors.New("{\"error\" : \"name and id of security group are both not specified\"}")
 		}
 		if err != nil {
 			beautyfulPrints.PrintError(err)
 		} else {
-			fmt.Println("Deleted successfully")
+			fmt.Println("OK")
 		}
 	},
 }
@@ -152,7 +152,7 @@ var sgRuleListCmd = &cobra.Command{
 		} else if sgRuleListSGName != "" {
 			rulesList, err = securityGroup.GetSecurityGroupRulesListBySGName(ProjectID, sgRuleListLimit, sgRuleListMarker, sgRuleListSGName)
 		} else {
-			err = errors.New("name and id of security group are both not specified")
+			err = errors.New("{\"error\" : \"name and id of security group are both not specified\"}")
 		}
 		if err != nil {
 			beautyfulPrints.PrintError(err)
@@ -168,7 +168,12 @@ var sgRuleDeleteCmd = &cobra.Command{
 	Short: "Delete security rule",
 	Long:  `Delete security rule`,
 	Run: func(cmd *cobra.Command, args []string) {
-
+		err := securityGroup.DeleteSecurityGroupRule(ProjectID, sgRuleDeleteRuleID)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
 	},
 }
 
