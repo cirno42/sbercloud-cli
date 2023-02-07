@@ -18,34 +18,34 @@ type NatModel struct {
 }
 
 type SnatRuleModel struct {
-	FloatingIPID      string `json:"floating_ip_id"`
-	Status            string `json:"status"`
-	NatGatewayID      string `json:"nat_gateway_id"`
-	AdminStateUp      bool   `json:"admin_state_up"`
-	NetworkID         string `json:"network_id"`
-	Description       string `json:"description"`
-	SourceType        int    `json:"source_type"`
-	TenantID          string `json:"tenant_id"`
-	CreatedAt         string `json:"created_at"`
-	ID                string `json:"id"`
-	FloatingIPAddress string `json:"floating_ip_address"`
+	FloatingIPID      string `json:"floating_ip_id" header:"floating_ip_id"`
+	Status            string `json:"status" header:"status"`
+	NatGatewayID      string `json:"nat_gateway_id" header:"nat_gateway_id"`
+	AdminStateUp      bool   `json:"admin_state_up" header:"admin_state_up"`
+	NetworkID         string `json:"network_id" header:"network_id"`
+	Description       string `json:"description" header:"description"`
+	SourceType        int    `json:"source_type" header:"source_type"`
+	TenantID          string `json:"tenant_id" header:"tenant_id"`
+	CreatedAt         string `json:"created_at" header:"created_at"`
+	ID                string `json:"id" header:"id"`
+	FloatingIPAddress string `json:"floating_ip_address" header:"floating_ip_address"`
 }
 
 type DnatRuleModel struct {
-	FloatingIPID             string `json:"floating_ip_id"`
-	Status                   string `json:"status"`
-	NatGatewayID             string `json:"nat_gateway_id"`
-	AdminStateUp             bool   `json:"admin_state_up"`
-	PortID                   string `json:"port_ID"`
-	PrivateIP                string `json:"private_ip"`
-	InternalServicePort      int    `json:"internal_service_port"`
-	Protocol                 string `json:"protocol"`
-	TenantID                 string `json:"tenant_id"`
-	CreatedAt                string `json:"created_at"`
-	ID                       string `json:"id"`
-	FloatingIPAddress        string `json:"floating_ip_address"`
-	ExternalServicePort      int    `json:"external_service_port"`
-	Description              string `json:"description"`
-	ExternalServicePortRange string `json:"external_service_port_range"`
-	InternalServicePortRange string `json:"internal_service_port_range"`
+	FloatingIPID             string `json:"floating_ip_id" header:"floating_ip_id"`
+	Status                   string `json:"status" header:"status"`
+	NatGatewayID             string `json:"nat_gateway_id" header:"nat_gateway_id"`
+	AdminStateUp             bool   `json:"admin_state_up" header:"admin_state_up"`
+	PortID                   string `json:"port_ID" header:"port_ID"`
+	PrivateIP                string `json:"private_ip" header:"private_ip"`
+	InternalServicePort      int    `json:"internal_service_port" header:"internal_service_port"`
+	Protocol                 string `json:"protocol" header:"protocol"`
+	TenantID                 string `json:"tenant_id" header:"tenant_id"`
+	CreatedAt                string `json:"created_at" header:"created_at"`
+	ID                       string `json:"id" header:"id"`
+	FloatingIPAddress        string `json:"floating_ip_address" header:"floating_ip_address"`
+	ExternalServicePort      int    `json:"external_service_port" header:"external_service_port"`
+	Description              string `json:"description" header:"description"`
+	ExternalServicePortRange string `json:"external_service_port_range" header:"external_service_port_range"`
+	InternalServicePortRange string `json:"internal_service_port_range" header:"internal_service_port_range"`
 }

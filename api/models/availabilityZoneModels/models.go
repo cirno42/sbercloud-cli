@@ -1,8 +1,10 @@
 package availabilityZoneModels
 
 type AvailabilityZoneInfo struct {
-	ZoneState struct {
-		Available bool `json:"available"`
-	} `json:"zoneState"`
-	ZoneName string `json:"zoneName"`
+	ZoneState AvailabilityZoneState `json:"zoneState"`
+	ZoneName  string                `json:"zoneName" header:"zoneName"`
+}
+
+type AvailabilityZoneState struct {
+	Available bool `json:"available" header:"available"`
 }

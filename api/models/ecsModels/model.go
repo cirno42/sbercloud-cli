@@ -18,8 +18,8 @@ type ECSModel struct {
 		Created string `json:"created"`
 	} `json:"fault"`
 	Addresses map[string][]ECSNetwork `json:"addresses"` //workaround for jmespath query, more info: https://github.com/jmespath/go-jmespath/issues/32
-	ID        string                  `json:"id"`
-	Name      string                  `json:"name"`
+	ID        string                  `json:"id" header:"id"`
+	Name      string                  `json:"name" header:"name"`
 	Flavor    struct {
 		Disk  string `json:"disk"`
 		Vcpus string `json:"vcpus"`
@@ -27,16 +27,16 @@ type ECSModel struct {
 		ID    string `json:"id"`
 		Name  string `json:"name"`
 	} `json:"flavor"`
-	AccessIPv4 string `json:"accessIPv4"`
-	AccessIPv6 string `json:"accessIPv6"`
-	Status     string `json:"status"`
-	KeyName    string `json:"key_name"`
+	AccessIPv4 string `json:"accessIPv4" header:"access_IP_v4"`
+	AccessIPv6 string `json:"accessIPv6" header:"access_IP_v6"`
+	Status     string `json:"status" header:"status"`
+	KeyName    string `json:"key_name" header:"key_name"`
 	Image      struct {
 		ID string `json:"id"`
 	} `json:"image"`
 	HostID   string    `json:"hostId"`
-	Updated  time.Time `json:"updated"`
-	Created  time.Time `json:"created"`
+	Updated  string    `json:"updated" header:"updated"`
+	Created  time.Time `json:"created" header:"created"`
 	Metadata struct {
 		MeteringImageID          string `json:"metering.image_id"`
 		MeteringImagetype        string `json:"metering.imagetype"`
@@ -49,7 +49,7 @@ type ECSModel struct {
 		ChargingMode             string `json:"charging_mode"`
 	} `json:"metadata"`
 	Tags                             []interface{} `json:"tags"`
-	Description                      string        `json:"description"`
+	Description                      string        `json:"description" header:"description"`
 	Locked                           bool          `json:"locked"`
 	ConfigDrive                      string        `json:"config_drive"`
 	TenantID                         string        `json:"tenant_id"`

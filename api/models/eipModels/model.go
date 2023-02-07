@@ -18,16 +18,16 @@ type EipModel struct {
 }
 
 type ActiveEIP struct {
-	ID                 string `json:"id"`
-	Address            string `json:"address"`
-	InstanceID         string `json:"instance_id"`
-	InstanceType       string `json:"instance_type"`
-	ParentInstanceID   string `json:"parent_instance"`
-	ParentInstanceType string `json:"parent_instance_type"`
+	ID                 string `json:"id" header:"id"`
+	Address            string `json:"address" header:"address"`
+	InstanceID         string `json:"instance_id" header:"instance_id"`
+	InstanceType       string `json:"instance_type" header:"instance_type"`
+	ParentInstanceID   string `json:"parent_instance" header:"parent_instance"`
+	ParentInstanceType string `json:"parent_instance_type" header:"parent_instance_type"`
 }
 
 type ProjectActiveEIP struct {
-	ProjectID   string      `json:"project_id"`
-	ProjectName string      `json:"project_name"`
+	ProjectID   string      `json:"project_id" header:"project_id"`
+	ProjectName string      `json:"project_name" header:"project_name"`
 	ActiveIP    []ActiveEIP `json:"active_ip"`
 }
