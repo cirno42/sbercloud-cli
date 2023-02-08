@@ -148,6 +148,8 @@ var subnetDeleteCmd = &cobra.Command{
 		err = subnets.DeleteSubnet(ProjectID, subnet.VpcId, subnet.Id)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
 		}
 	},
 }

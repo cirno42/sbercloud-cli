@@ -51,7 +51,7 @@ var vpcGetListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		vpcs, err := vpcs.GetVpcsList(ProjectID, listLimit, listMarker)
 		if err != nil {
-			fmt.Printf("ERROR: %s\n", err.Error())
+			beautyfulPrints.PrintError(err)
 			return
 		}
 		beautyfulPrints.PrintStruct(vpcs, jmesPathQuery)
@@ -71,7 +71,7 @@ var vpcGetInfoCmd = &cobra.Command{
 			vpc, err = vpcs.GetVpcByName(ProjectID, infoName)
 		}
 		if err != nil {
-			fmt.Printf("ERROR: %s\n", err.Error())
+			beautyfulPrints.PrintError(err)
 		} else {
 			beautyfulPrints.PrintStruct(*vpc, jmesPathQuery)
 		}
@@ -106,7 +106,7 @@ var vpcDeleteCmd = &cobra.Command{
 			if deleteID == "" {
 				vpc, err := vpcs.GetVpcByName(ProjectID, deleteName)
 				if err != nil {
-					fmt.Println("ERROR: " + err.Error())
+					beautyfulPrints.PrintError(err)
 					return
 				}
 				vpcID = vpc.Id
@@ -115,7 +115,7 @@ var vpcDeleteCmd = &cobra.Command{
 			}
 			err := vpcs.DeleteVpcRecursive(ProjectID, vpcID)
 			if err != nil {
-				fmt.Println("ERROR: " + err.Error())
+				beautyfulPrints.PrintError(err)
 
 			}
 			return
@@ -126,14 +126,16 @@ var vpcDeleteCmd = &cobra.Command{
 		} else {
 			vpc, err := vpcs.GetVpcByName(ProjectID, deleteName)
 			if err != nil {
-				fmt.Printf("ERROR: %s\n", err.Error())
+				beautyfulPrints.PrintError(err)
 				return
 			}
 			id = vpc.Id
 		}
 		err := vpcs.DeleteVpc(ProjectID, id)
 		if err != nil {
-			fmt.Printf("ERROR: %s\n", err.Error())
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
 		}
 	},
 }
