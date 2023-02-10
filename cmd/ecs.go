@@ -16,16 +16,39 @@ var ecsCmd = &cobra.Command{
 }
 
 var ecsFlavorListAvailabilityZone string
+var ecsFlavorListVcpus int
+var ecsFlavorListRam int
+var ecsFlavorListType string
+var ecsFlavorListGen string
 var ecsFlavorListCmd = &cobra.Command{
 	Use:   "flavor-list",
 	Short: "Get flavor list",
 	Long:  `Get flavor list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		flavors, err := ecs.GetESCFlavorList(ProjectID, ecsFlavorListAvailabilityZone)
+		flavors, err := ecs.GetFlavorListBySpec(ProjectID, ecsFlavorListGen, ecsFlavorListType, ecsFlavorListAvailabilityZone, ecsFlavorListRam, ecsFlavorListVcpus)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
 		} else {
 			beautyfulPrints.PrintStruct(flavors, jmesPathQuery)
+		}
+	},
+}
+
+var ecsGetFlavorAvailabilityZone string
+var ecsGetFlavorVcpus int
+var ecsGetFlavorRam int
+var ecsGetFlavorType string
+var ecsGetFlavorGen string
+var ecsGetFlavorCmd = &cobra.Command{
+	Use:   "get-flavor",
+	Short: "Get flavor",
+	Long:  `Get flavor`,
+	Run: func(cmd *cobra.Command, args []string) {
+		flavor, err := ecs.GetMinimumFlavorBySpec(ProjectID, ecsGetFlavorGen, ecsGetFlavorType, ecsGetFlavorAvailabilityZone, ecsGetFlavorRam, ecsGetFlavorVcpus)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(flavor, jmesPathQuery)
 		}
 	},
 }
@@ -493,11 +516,21 @@ func init() {
 	ecsCmd.AddCommand(ecsChangeFlavorCmd)
 	ecsCmd.AddCommand(ecsAddSGCmd)
 	ecsCmd.AddCommand(ecsDeleteSGCmd)
+	ecsCmd.AddCommand(ecsGetFlavorCmd)
 
 	ecsListCmd.Flags().IntVarP(&ecsListLimit, "limit", "l", 0, "Specifies the maximum number of ECSs on one page.")
 	ecsListCmd.Flags().IntVarP(&ecsListOffset, "offset", "o", 0, "Specifies a page number.")
 
 	ecsFlavorListCmd.Flags().StringVarP(&ecsFlavorListAvailabilityZone, "availability_zone", "a", "", "")
+	ecsFlavorListCmd.Flags().IntVarP(&ecsFlavorListVcpus, "vcpus", "c", 0, "")
+	ecsFlavorListCmd.Flags().IntVarP(&ecsFlavorListRam, "ram", "r", 0, "")
+	ecsFlavorListCmd.Flags().StringVarP(&ecsGetFlavorGen, "gen", "g", "", "")
+
+	ecsGetFlavorCmd.Flags().StringVarP(&ecsGetFlavorAvailabilityZone, "availability_zone", "a", "", "")
+	ecsGetFlavorCmd.Flags().IntVarP(&ecsGetFlavorVcpus, "vcpus", "c", 0, "")
+	ecsGetFlavorCmd.Flags().IntVarP(&ecsGetFlavorRam, "ram", "r", 0, "")
+	ecsGetFlavorCmd.Flags().StringVarP(&ecsGetFlavorType, "type", "t", "normal", "Specifies the ECS flavor type: normal: general computing; cpuv1: computing I; cpuv2: computing II; computingv3: general computing-plus; highmem: memory-optimized; saphana: large-memory HANA ECS; diskintensive: disk-intensive")
+	ecsGetFlavorCmd.Flags().StringVarP(&ecsGetFlavorGen, "gen", "g", "", "")
 
 	ecsInfoCmd.Flags().StringVarP(&ecsGetInfoId, "id", "i", "", "Specifies the ECS ID.")
 
