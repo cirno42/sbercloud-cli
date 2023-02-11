@@ -11,7 +11,7 @@ type ImageModel struct {
 	Protected          bool          `json:"protected"`
 	Checksum           string        `json:"checksum"`
 	SupportKvmFpgaType string        `json:"__support_kvm_fpga_type"`
-	ID                 string        `json:"id" header:"schema"`
+	ID                 string        `json:"id" header:"id"`
 	Isregistered       string        `json:"__isregistered"`
 	MinRAM             int           `json:"min_ram"`
 	Lazyloading        string        `json:"__lazyloading"`

@@ -3,7 +3,7 @@ package evs
 import (
 	"fmt"
 	"sbercloud-cli/api/endpoints"
-	"sbercloud-cli/api/models/ecsModels"
+	"sbercloud-cli/api/models/evsModels"
 	"sbercloud-cli/internal/handlers/requestMakers"
 )
 
@@ -20,7 +20,7 @@ type createVolumeRequest struct {
 	Volume volumeRequest `json:"volume"`
 }
 
-func CreateDisk(projectId, name, volumeType, availabilityZone string, count, size int, multiattach bool) (*ecsModels.ECSJob, error) {
+func CreateDisk(projectId, name, volumeType, availabilityZone string, count, size int, multiattach bool) (*evsModels.CreateBatchDisks, error) {
 	endpoint := fmt.Sprintf(endpoints.GetEndpointAddress(endpoints.EvsEndpoint)+"/v2/%s/cloudvolumes", projectId)
 	req := volumeRequest{
 		Name:             name,
@@ -33,7 +33,7 @@ func CreateDisk(projectId, name, volumeType, availabilityZone string, count, siz
 	request := createVolumeRequest{
 		Volume: req,
 	}
-	var createdJob ecsModels.ECSJob
+	var createdJob evsModels.CreateBatchDisks
 	err := requestMakers.CreateAndDoRequest(endpoint, requestMakers.HTTP_METHOD_POST, request, &createdJob, nil)
 	return &createdJob, err
 }

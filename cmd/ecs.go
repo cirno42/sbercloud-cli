@@ -87,16 +87,27 @@ var ecsInfoCmd = &cobra.Command{
 var ecsDeleteIds []string
 var ecsDeletePublicIp bool
 var ecsDeleteVolume bool
+var ecsDeleteWaitUntilSuccess bool
 var ecsDeleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete ECS",
 	Long:  `Delete ECS`,
 	Run: func(cmd *cobra.Command, args []string) {
-		ecs, err := ecs.DeleteEcs(ProjectID, ecsDeleteIds, ecsDeletePublicIp, ecsDeleteVolume)
+		job, err := ecs.DeleteEcs(ProjectID, ecsDeleteIds, ecsDeletePublicIp, ecsDeleteVolume)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
+			return
+		}
+		if ecsDeleteWaitUntilSuccess {
+			res, err := ecs.WaitUntilJobSuccessAndGetStatus(ProjectID, job.JobID)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+				return
+			} else {
+				fmt.Println(res)
+			}
 		} else {
-			beautyfulPrints.PrintStruct(ecs, jmesPathQuery)
+			beautyfulPrints.PrintStruct(job, jmesPathQuery)
 		}
 	},
 }
@@ -135,6 +146,7 @@ var ecsCreateCmd = &cobra.Command{
 			flavor, err := ecs.GetMinimumFlavorBySpec(ProjectID, ecsCreateFlavorGen, ecsCreateFlavorType, ecsCreateAvailabilityZone, ecsCreateRam, ecsCreateVcpus)
 			if err != nil {
 				beautyfulPrints.PrintError(err)
+				return
 			}
 			flavorRef = flavor.ID
 		}
@@ -144,6 +156,10 @@ var ecsCreateCmd = &cobra.Command{
 		createdEcs, err := ecs.CreateECS(ProjectID, ecsCreateVpcID, ecsCreateImageRef, ecsCreateName, flavorRef,
 			ecsCreateRootVolumeType, ecsCreateAvailabilityZone, ecsCreateEipId, ecsCreateEipType, ecsCreateEipBandwidthType, ecsCreateEipBandwidthSize, ecsCreateVolumeTypes,
 			ecsCreateSubnetIds, ecsCreateSecGroupIds, ecsCreateVolumeSizes, ecsCreateAdminPass, ecsCreateKeyName, ecsCreateRootVolumeSize, ecsCreateCount)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+			return
+		}
 		if ecsCreateWaitUntilSuccess {
 			res, err := ecs.WaitUntilJobSuccess(ProjectID, createdEcs.JobID)
 			servers, err := ecs.GetListEcsById(ProjectID, res)
@@ -153,16 +169,13 @@ var ecsCreateCmd = &cobra.Command{
 				beautyfulPrints.PrintStruct(servers, jmesPathQuery)
 			}
 		} else {
-			if err != nil {
-				beautyfulPrints.PrintError(err)
-			} else {
-				beautyfulPrints.PrintStruct(createdEcs, jmesPathQuery)
-			}
+			beautyfulPrints.PrintStruct(createdEcs, jmesPathQuery)
 		}
 	},
 }
 
 var ecsBatchStartServerIds []string
+var ecsStartWaitUntilSuccess bool
 var ecsBatchStartCmd = &cobra.Command{
 	Use:   "batch-start",
 	Short: "This command is used to start ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time.",
@@ -171,6 +184,16 @@ var ecsBatchStartCmd = &cobra.Command{
 		job, err := ecs.BatchStartEcs(ProjectID, ecsBatchStartServerIds)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
+			return
+		}
+		if ecsStartWaitUntilSuccess {
+			res, err := ecs.WaitUntilJobSuccess(ProjectID, job.JobID)
+			servers, err := ecs.GetListEcsById(ProjectID, res)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				beautyfulPrints.PrintStruct(servers, jmesPathQuery)
+			}
 		} else {
 			beautyfulPrints.PrintStruct(job, jmesPathQuery)
 		}
@@ -179,6 +202,7 @@ var ecsBatchStartCmd = &cobra.Command{
 
 var ecsBatchRestartServerIds []string
 var ecsBatchRestartType string
+var ecsRestartWaitUntilSuccess bool
 var ecsBatchRestartCmd = &cobra.Command{
 	Use:   "batch-restart",
 	Short: "This command is used to restart  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time",
@@ -187,6 +211,16 @@ var ecsBatchRestartCmd = &cobra.Command{
 		job, err := ecs.BatchRestartEcs(ProjectID, ecsBatchRestartType, ecsBatchRestartServerIds)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
+			return
+		}
+		if ecsRestartWaitUntilSuccess {
+			res, err := ecs.WaitUntilJobSuccess(ProjectID, job.JobID)
+			servers, err := ecs.GetListEcsById(ProjectID, res)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				beautyfulPrints.PrintStruct(servers, jmesPathQuery)
+			}
 		} else {
 			beautyfulPrints.PrintStruct(job, jmesPathQuery)
 		}
@@ -195,6 +229,7 @@ var ecsBatchRestartCmd = &cobra.Command{
 
 var ecsBatchStopServerIds []string
 var ecsBatchStopType string
+var ecsStopWaitUntilSuccess bool
 var ecsBatchStopCmd = &cobra.Command{
 	Use:   "batch-stop",
 	Short: "This command is used to stop  ECSs in a batch based on specified ECS IDs. A maximum of 1000 ECSs can be started at a time",
@@ -203,6 +238,16 @@ var ecsBatchStopCmd = &cobra.Command{
 		job, err := ecs.BatchStopEcs(ProjectID, ecsBatchStopType, ecsBatchStopServerIds)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
+			return
+		}
+		if ecsStopWaitUntilSuccess {
+			res, err := ecs.WaitUntilJobSuccess(ProjectID, job.JobID)
+			servers, err := ecs.GetListEcsById(ProjectID, res)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				beautyfulPrints.PrintStruct(servers, jmesPathQuery)
+			}
 		} else {
 			beautyfulPrints.PrintStruct(job, jmesPathQuery)
 		}
@@ -564,6 +609,7 @@ func init() {
 	ecsDeleteCmd.Flags().StringSliceVarP(&ecsDeleteIds, "id", "i", nil, "Specifies the ID of the ECS to be deleted.")
 	ecsDeleteCmd.Flags().BoolVar(&ecsDeletePublicIp, "del-ip", false, "Specifies whether to delete the EIP bound to the ECS when deleting the ECS. If you do not want to delete the EIP, the system only unbinds the EIP from the ECS and reserves the IP address.")
 	ecsDeleteCmd.Flags().BoolVar(&ecsDeleteVolume, "del-vol", false, "Specifies whether to delete the data disks attached to an ECS when deleting the ECS. If you set the parameter value to false, the system only detaches the disks from the ECS and reserves the disks.")
+	ecsDeleteCmd.Flags().BoolVar(&ecsDeleteWaitUntilSuccess, "wait-until-success", true, "")
 
 	ecsCreateCmd.Flags().StringVar(&ecsCreateVpcID, "vpc-id", "", "Specifies the ID of the VPC to which the ECS belongs. The value is in the format of the UUID.")
 	ecsCreateCmd.Flags().StringVar(&ecsCreateImageRef, "image-ref", "", "Specifies the ID of the system image used for creating ECSs.")
@@ -591,12 +637,15 @@ func init() {
 	ecsCreateCmd.Flags().BoolVar(&ecsCreateWaitUntilSuccess, "wait-until-success", true, "")
 
 	ecsBatchStartCmd.Flags().StringSliceVarP(&ecsBatchStartServerIds, "id", "i", nil, "Specifies ECS IDs")
+	ecsBatchStartCmd.Flags().BoolVar(&ecsStartWaitUntilSuccess, "wait-until-success", true, "")
 
 	ecsBatchRestartCmd.Flags().StringSliceVarP(&ecsBatchRestartServerIds, "id", "i", nil, "Specifies ECS IDs")
 	ecsBatchRestartCmd.Flags().StringVarP(&ecsBatchRestartType, "type", "t", "SOFT", "Specifies the type of the restart operation.")
+	ecsBatchRestartCmd.Flags().BoolVar(&ecsRestartWaitUntilSuccess, "wait-until-success", true, "")
 
 	ecsBatchStopCmd.Flags().StringSliceVarP(&ecsBatchStopServerIds, "id", "i", nil, "Specifies ECS IDs")
 	ecsBatchStopCmd.Flags().StringVarP(&ecsBatchStopType, "type", "t", "SOFT", "Specifies an ECS stop type.")
+	ecsBatchStopCmd.Flags().BoolVar(&ecsStopWaitUntilSuccess, "wait-until-success", true, "")
 
 	ecsBatchAddNicsCmd.Flags().StringVarP(&ecsBatchAddNicsServerId, "id", "i", "", "Specifies ECS ID")
 	ecsBatchAddNicsCmd.Flags().StringSliceVarP(&ecsBatchAddNicsSubnetIds, "subnet-ids", "s", nil, "Specifies subnet IDs")

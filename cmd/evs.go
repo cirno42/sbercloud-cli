@@ -21,6 +21,7 @@ var evsCreateVolumeType string
 var evsCreateName string
 var evsCreateMultiattach bool
 var evsCreateAvailabilityZone string
+var evsCreateWaitUntilSuccess bool
 var evsCreateDiskCmd = &cobra.Command{
 	Use:   "create-disk",
 	Short: "commands to interact with EVS instances",
@@ -29,6 +30,20 @@ var evsCreateDiskCmd = &cobra.Command{
 		job, err := evs.CreateDisk(ProjectID, evsCreateName, evsCreateVolumeType, evsCreateAvailabilityZone, evsCreateCount, evsCreateSize, evsCreateMultiattach)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
+			return
+		}
+		if evsCreateWaitUntilSuccess {
+			diskIds, err := evs.WaitUntilJobSuccess(ProjectID, job.JobID)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				disks, err := evs.GetDisksById(ProjectID, diskIds)
+				if err != nil {
+					beautyfulPrints.PrintError(err)
+				} else {
+					beautyfulPrints.PrintStruct(disks, jmesPathQuery)
+				}
+			}
 		} else {
 			beautyfulPrints.PrintStruct(job, jmesPathQuery)
 		}
@@ -41,7 +56,7 @@ var evsJobInfoCmd = &cobra.Command{
 	Short: "commands to interact with ECS instances",
 	Long:  `commands to interact with ECS instances`,
 	Run: func(cmd *cobra.Command, args []string) {
-		job, err := evs.GetInfoAboutTask(ProjectID, evsJobId)
+		job, err := evs.GetInfoAboutBatchTask(ProjectID, evsJobId)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
 		} else {
@@ -114,6 +129,7 @@ func init() {
 	evsCreateDiskCmd.Flags().StringVarP(&evsCreateName, "name", "n", "", "")
 	evsCreateDiskCmd.Flags().StringVarP(&evsCreateAvailabilityZone, "az", "a", "AZ1", "")
 	evsCreateDiskCmd.Flags().BoolVarP(&evsCreateMultiattach, "multiattach", "m", false, "")
+	evsCreateDiskCmd.Flags().BoolVar(&evsCreateWaitUntilSuccess, "wait-until-success", true, "")
 
 	evsJobInfoCmd.Flags().StringVarP(&evsJobId, "id", "i", "", "")
 

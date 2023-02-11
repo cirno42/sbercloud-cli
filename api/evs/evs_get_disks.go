@@ -29,3 +29,21 @@ func GetDisksList(projectID, status string, limit, offset int) ([]evsModels.EvsM
 	err := requestMakers.CreateAndDoRequest(endpoint, requestMakers.HTTP_METHOD_GET, nil, &resp, nil)
 	return resp.Volumes, err
 }
+
+func GetDisksById(projectID string, diskIds []string) ([]evsModels.EvsModel, error) {
+	disks, err := GetDisksList(projectID, "", 0, 0)
+	if err != nil {
+		return nil, err
+	}
+	idSet := make(map[string]bool)
+	for _, id := range diskIds {
+		idSet[id] = true
+	}
+	filtredDisks := make([]evsModels.EvsModel, 0)
+	for _, disk := range disks {
+		if idSet[disk.ID] {
+			filtredDisks = append(filtredDisks, disk)
+		}
+	}
+	return filtredDisks, err
+}

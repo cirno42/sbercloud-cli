@@ -32,3 +32,41 @@ type EvsModel struct {
 	UserID            string `json:"user_id"`
 	VolumeType        string `json:"volume_type" header:"volume_type"`
 }
+
+type CreateDiskJob struct {
+	Status   string `json:"status"`
+	Entities struct {
+		VolumeID string `json:"volume_id"`
+	} `json:"entities"`
+	JobID      string `json:"job_id"`
+	JobType    string `json:"job_type"`
+	BeginTime  string `json:"begin_time"`
+	EndTime    string `json:"end_time"`
+	ErrorCode  string `json:"error_code"`
+	FailReason string `json:"fail_reason"`
+	VolumeID   string `json:"volume_id"`
+}
+
+type CreateBatchDisks struct {
+	Status   string `json:"status"`
+	Entities struct {
+		SubJobs []CreateDiskJob `json:"sub_jobs"`
+	} `json:"entities"`
+	JobID      string `json:"job_id"`
+	JobType    string `json:"job_type"`
+	BeginTime  string `json:"begin_time"`
+	EndTime    string `json:"end_time"`
+	ErrorCode  string `json:"error_code"`
+	FailReason string `json:"fail_reason"`
+}
+
+type CreateSingleDisks struct {
+	Status     string        `json:"status"`
+	Entities   CreateDiskJob `json:"entities"`
+	JobID      string        `json:"job_id"`
+	JobType    string        `json:"job_type"`
+	BeginTime  string        `json:"begin_time"`
+	EndTime    string        `json:"end_time"`
+	ErrorCode  string        `json:"error_code"`
+	FailReason string        `json:"fail_reason"`
+}
