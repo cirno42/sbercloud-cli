@@ -119,18 +119,45 @@ var ecsCreateVolumeSizes []int
 var ecsCreateRootVolumeSize int
 var ecsCreateAvailabilityZone string
 var ecsCreateKeyName string
+var ecsCreateVcpus int
+var ecsCreateRam int
+var ecsCreateFlavorType string
+var ecsCreateFlavorGen string
+var ecsCreateAssignEip bool
+var ecsCreateWaitUntilSuccess bool
 var ecsCreateCmd = &cobra.Command{
 	Use:   "create",
-	Short: "Delete ECS",
-	Long:  `Delete ECS`,
+	Short: "Create ECS",
+	Long:  `Create ECS`,
 	Run: func(cmd *cobra.Command, args []string) {
-		ecs, err := ecs.CreateECS(ProjectID, ecsCreateVpcID, ecsCreateImageRef, ecsCreateName, ecsCreateFlavorRef,
+		flavorRef := ecsCreateFlavorRef
+		if flavorRef == "" {
+			flavor, err := ecs.GetMinimumFlavorBySpec(ProjectID, ecsCreateFlavorGen, ecsCreateFlavorType, ecsCreateAvailabilityZone, ecsCreateRam, ecsCreateVcpus)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			}
+			flavorRef = flavor.ID
+		}
+		if (ecsCreateAssignEip) && (ecsCreateEipBandwidthSize == 0) {
+			ecsCreateEipBandwidthSize = 5
+		}
+		createdEcs, err := ecs.CreateECS(ProjectID, ecsCreateVpcID, ecsCreateImageRef, ecsCreateName, flavorRef,
 			ecsCreateRootVolumeType, ecsCreateAvailabilityZone, ecsCreateEipId, ecsCreateEipType, ecsCreateEipBandwidthType, ecsCreateEipBandwidthSize, ecsCreateVolumeTypes,
 			ecsCreateSubnetIds, ecsCreateSecGroupIds, ecsCreateVolumeSizes, ecsCreateAdminPass, ecsCreateKeyName, ecsCreateRootVolumeSize, ecsCreateCount)
-		if err != nil {
-			beautyfulPrints.PrintError(err)
+		if ecsCreateWaitUntilSuccess {
+			res, err := ecs.WaitUntilJobSuccess(ProjectID, createdEcs.JobID)
+			servers, err := ecs.GetListEcsById(ProjectID, res)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				beautyfulPrints.PrintStruct(servers, jmesPathQuery)
+			}
 		} else {
-			beautyfulPrints.PrintStruct(ecs, jmesPathQuery)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				beautyfulPrints.PrintStruct(createdEcs, jmesPathQuery)
+			}
 		}
 	},
 }
@@ -547,15 +574,21 @@ func init() {
 	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateSecGroupIds, "sg-ids", nil, "Specifies the security groups of the ECS.")
 	ecsCreateCmd.Flags().StringVar(&ecsCreateAdminPass, "admin-pass", "", "Specifies the initial login password of the administrator account for logging in to an ECS using password authentication")
 	ecsCreateCmd.Flags().StringVar(&ecsCreateEipId, "eip-id", "", "Specifies the EIP ID")
-	ecsCreateCmd.Flags().IntVar(&ecsCreateEipBandwidthSize, "eip-size", 1, "Specifies the bandwidth size. Specifies the bandwidth (Mbit/s). The value ranges from 1 to 300.")
+	ecsCreateCmd.Flags().IntVar(&ecsCreateEipBandwidthSize, "eip-size", 0, "Specifies the bandwidth size. Specifies the bandwidth (Mbit/s). The value ranges from 1 to 300.")
 	ecsCreateCmd.Flags().StringVar(&ecsCreateEipBandwidthType, "eip-bandwidth", "PER", "Specifies the bandwidth sharing type. Enumerated values: PER (indicates exclusive bandwidth) and WHOLE (indicates sharing)")
 	ecsCreateCmd.Flags().StringVar(&ecsCreateEipType, "eip-type", "5_bgp", "Specifies Type of EIP. The value can be 5_bgp, default is 5_bgp")
 	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateVolumeTypes, "data-volume-types", nil, "Specifies the type of the ECS data disk, which must be one of available disk types.")
 	ecsCreateCmd.Flags().IntSliceVar(&ecsCreateVolumeSizes, "data-volume-sizes", nil, "Specifies the data disk size, in GB. The value ranges from 10 to 32768.")
-	ecsCreateCmd.Flags().IntVar(&ecsCreateRootVolumeSize, "root-volume-size", 0, "Specifies the system disk size, in GB. The value ranges from 1 to 1024.")
+	ecsCreateCmd.Flags().IntVar(&ecsCreateRootVolumeSize, "root-volume-size", 40, "Specifies the system disk size, in GB. The value ranges from 1 to 1024.")
 	ecsCreateCmd.Flags().IntVar(&ecsCreateCount, "count", 1, "Specifies the number of ECSs to be created.")
-	ecsCreateCmd.Flags().StringVar(&ecsCreateAvailabilityZone, "az", "", "")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateAvailabilityZone, "az", "ru-moscow-1a", "")
 	ecsCreateCmd.Flags().StringVar(&ecsCreateKeyName, "key-name", "", "Specifies the name of the SSH key used for logging in to the ECS.")
+	ecsCreateCmd.Flags().IntVar(&ecsCreateVcpus, "vcpus", 0, "")
+	ecsCreateCmd.Flags().IntVar(&ecsCreateRam, "ram", 0, "")
+	ecsCreateCmd.Flags().StringVarP(&ecsCreateFlavorType, "flavor-type", "t", "normal", "Specifies the ECS flavor type: normal: general computing; cpuv1: computing I; cpuv2: computing II; computingv3: general computing-plus; highmem: memory-optimized; saphana: large-memory HANA ECS; diskintensive: disk-intensive")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateFlavorGen, "flavor-gen", "", "")
+	ecsCreateCmd.Flags().BoolVar(&ecsCreateAssignEip, "assign-eip", false, "")
+	ecsCreateCmd.Flags().BoolVar(&ecsCreateWaitUntilSuccess, "wait-until-success", true, "")
 
 	ecsBatchStartCmd.Flags().StringSliceVarP(&ecsBatchStartServerIds, "id", "i", nil, "Specifies ECS IDs")
 

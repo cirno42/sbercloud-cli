@@ -6,6 +6,7 @@ import (
 	"sbercloud-cli/api/models/ecsModels"
 	"sbercloud-cli/internal/handlers/requestMakers"
 	"strconv"
+	"sync"
 )
 
 type listEcsQueryingResponse struct {
@@ -37,4 +38,20 @@ func GetInfoAboutEcs(projectID, ecsID string) (ecsModels.ECSModel, error) {
 	var queriedEcs ecsQueryingResponse
 	err := requestMakers.CreateAndDoRequest(endpoint, requestMakers.HTTP_METHOD_GET, nil, &queriedEcs, nil)
 	return queriedEcs.Server, err
+}
+
+func GetListEcsById(projectID string, ecsIds []string) ([]ecsModels.ECSModel, error) {
+
+	ecses := make([]ecsModels.ECSModel, len(ecsIds))
+	var wg sync.WaitGroup
+	for i, id := range ecsIds {
+		wg.Add(1)
+		go func(projectID, ecsID string, ecs *ecsModels.ECSModel) {
+			defer wg.Done()
+			server, _ := GetInfoAboutEcs(projectID, ecsID)
+			*ecs = server
+		}(projectID, id, &ecses[i])
+	}
+	wg.Wait()
+	return ecses, nil
 }

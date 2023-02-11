@@ -83,7 +83,7 @@ func CreateECS(projectID, vpcID, imageRef, name, flavorRef, rootVolumeType, avai
 	var ip *publicIp
 	if eipId != "" {
 		ip = &publicIp{Id: eipId}
-	} else if bandwidthType != "" {
+	} else if bandwidthType != "" && bandwidthSize != 0 {
 		bw := bandwidth{Size: bandwidthSize, Sharetype: bandwidthType}
 		eip := eip{Bandwidth: bw, Iptype: eipType}
 		ip = &publicIp{Eip: &eip}
