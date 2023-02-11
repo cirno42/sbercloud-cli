@@ -38,5 +38,5 @@ func GetVpcByName(projectID, name string) (*vpcModels.VpcModel, error) {
 			return &vpcs[i], nil
 		}
 	}
-	return nil, errors.New("No such VPC")
+	return nil, errors.New("{\"error\" : \"No such VPC\"}")
 }

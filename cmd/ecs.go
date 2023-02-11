@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"sbercloud-cli/api/ecs"
+	"sbercloud-cli/api/subnets"
+	"sbercloud-cli/api/vpcs"
 	"sbercloud-cli/internal/beautyfulPrints"
 )
 
@@ -115,6 +117,9 @@ var ecsDeleteCmd = &cobra.Command{
 var ecsCreateVpcID string
 var ecsCreateImageRef string
 var ecsCreateName string
+var ecsCreateVpcName string
+var ecsCreateSubnetNames []string
+var ecsCreateSGNames []string
 var ecsCreateFlavorRef string
 var ecsCreateRootVolumeType string
 var ecsCreateSubnetIds []string
@@ -150,12 +155,37 @@ var ecsCreateCmd = &cobra.Command{
 			}
 			flavorRef = flavor.ID
 		}
+		var vpcId string
+		if ecsCreateVpcID == "" {
+			vpc, err := vpcs.GetVpcByName(ProjectID, ecsCreateVpcName)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+				return
+			}
+			vpcId = vpc.Id
+		} else {
+			vpcId = ecsCreateVpcID
+		}
+		var subnetIds []string
+		if ecsCreateSubnetIds == nil {
+			subnets, err := subnets.GetSubnetsByNames(ProjectID, ecsCreateSubnetNames)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+				return
+			}
+			subnetIds = make([]string, len(subnets))
+			for i, subnet := range subnets {
+				subnetIds[i] = subnet.Id
+			}
+		} else {
+			subnetIds = ecsCreateSubnetIds
+		}
 		if (ecsCreateAssignEip) && (ecsCreateEipBandwidthSize == 0) {
 			ecsCreateEipBandwidthSize = 5
 		}
-		createdEcs, err := ecs.CreateECS(ProjectID, ecsCreateVpcID, ecsCreateImageRef, ecsCreateName, flavorRef,
+		createdEcs, err := ecs.CreateECS(ProjectID, vpcId, ecsCreateImageRef, ecsCreateName, flavorRef,
 			ecsCreateRootVolumeType, ecsCreateAvailabilityZone, ecsCreateEipId, ecsCreateEipType, ecsCreateEipBandwidthType, ecsCreateEipBandwidthSize, ecsCreateVolumeTypes,
-			ecsCreateSubnetIds, ecsCreateSecGroupIds, ecsCreateVolumeSizes, ecsCreateAdminPass, ecsCreateKeyName, ecsCreateRootVolumeSize, ecsCreateCount)
+			subnetIds, ecsCreateSecGroupIds, ecsCreateVolumeSizes, ecsCreateAdminPass, ecsCreateKeyName, ecsCreateRootVolumeSize, ecsCreateCount)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
 			return
@@ -635,6 +665,9 @@ func init() {
 	ecsCreateCmd.Flags().StringVar(&ecsCreateFlavorGen, "flavor-gen", "", "")
 	ecsCreateCmd.Flags().BoolVar(&ecsCreateAssignEip, "assign-eip", false, "")
 	ecsCreateCmd.Flags().BoolVar(&ecsCreateWaitUntilSuccess, "wait-until-success", true, "")
+	ecsCreateCmd.Flags().StringVar(&ecsCreateVpcName, "vpc-name", "", "")
+	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateSubnetNames, "subnet-names", nil, "Specifies the subnets of the ECS.")
+	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateSGNames, "sg-names", nil, "Specifies the security groups of the ECS.")
 
 	ecsBatchStartCmd.Flags().StringSliceVarP(&ecsBatchStartServerIds, "id", "i", nil, "Specifies ECS IDs")
 	ecsBatchStartCmd.Flags().BoolVar(&ecsStartWaitUntilSuccess, "wait-until-success", true, "")

@@ -38,3 +38,21 @@ func GetSubnetByName(projectID, subnetName string) (*subnetModels.SubnetModel, e
 	}
 	return nil, errors.New("no subnet with such name")
 }
+
+func GetSubnetsByNames(projectID string, subnetNames []string) ([]subnetModels.SubnetModel, error) {
+	subnetsList, err := GetSubnetsList(projectID, 0, "", "")
+	if err != nil {
+		return nil, err
+	}
+	res := make([]subnetModels.SubnetModel, 0)
+	names := make(map[string]bool)
+	for _, subnetName := range subnetNames {
+		names[subnetName] = true
+	}
+	for _, subnet := range subnetsList {
+		if names[subnet.Name] {
+			res = append(res, subnet)
+		}
+	}
+	return res, nil
+}
