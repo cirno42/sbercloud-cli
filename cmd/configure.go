@@ -1,11 +1,13 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"os"
 	"runtime"
+	"strings"
 )
 
 var setOutputFormat string
@@ -59,21 +61,24 @@ var configureCmd = &cobra.Command{
 func setConfigManual() {
 	keys := []string{"ACCESS_KEY", "SECRET_KEY", "PROJECT_ID", "OUTPUT_FORMAT", "REGION"}
 	config := make(map[string]string, len(keys))
-	var value string
 	if runtime.GOOS == "windows" {
 		fmt.Println("Available values for OUTPUT_FORMAT: YAML/JSON/TABLE")
 	} else if runtime.GOOS == "linux" {
 		fmt.Println("Available values for OUTPUT_FORMAT: YAML/JSON/JSON-C/TABLE")
 	}
 	fmt.Println("Available values for REGION: Ru-Moscow")
+	reader := bufio.NewReader(os.Stdin)
 	for _, key := range keys {
 		fmt.Print(key, "=")
-		_, err := fmt.Scanln(&value)
+		value, err := reader.ReadString('\n')
+		value = strings.TrimRight(value, "\r\n")
 		if err != nil {
 			fmt.Println("Error while reading stdin: ", err)
 			return
 		}
-		config[key] = value
+		if value != "" {
+			config[key] = value
+		}
 	}
 	err := godotenv.Write(config, ".env")
 	if err != nil {

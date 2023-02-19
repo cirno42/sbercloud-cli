@@ -6,6 +6,7 @@ import (
 	"sbercloud-cli/api/models/vpcModels"
 	"sbercloud-cli/api/vpcs"
 	"sbercloud-cli/internal/beautyfulPrints"
+	"sbercloud-cli/internal/utils/vpcUtils"
 )
 
 var listMarker string
@@ -80,6 +81,7 @@ var vpcGetInfoCmd = &cobra.Command{
 
 var vpcUpdateVpcId string
 var vpcUpdateVpcDesc string
+var vpcUpdateOldVpcName string
 var vpcUpdateVpcName string
 var vpcUpdateVpcCidr string
 var vpcUpdateCmd = &cobra.Command{
@@ -87,11 +89,16 @@ var vpcUpdateCmd = &cobra.Command{
 	Short: "Update VPC",
 	Long:  `Update VPC`,
 	Run: func(cmd *cobra.Command, args []string) {
-		vpc, err := vpcs.UpdateVpc(ProjectID, vpcUpdateVpcId, vpcUpdateVpcName, vpcUpdateVpcDesc, vpcUpdateVpcCidr)
+		id, err := vpcUtils.GetVpcId(vpcUpdateVpcId, vpcUpdateOldVpcName, ProjectID)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+			return
+		}
+		vpc, err := vpcs.UpdateVpc(ProjectID, id, vpcUpdateVpcName, vpcUpdateVpcDesc, vpcUpdateVpcCidr)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
 		} else {
-			beautyfulPrints.PrintStruct(vpc, jmesPathQuery)
+			beautyfulPrints.PrintStruct(vpc.Vpc, jmesPathQuery)
 		}
 	},
 }
@@ -160,7 +167,8 @@ func init() {
 
 	vpcCmd.AddCommand(vpcUpdateCmd)
 	vpcUpdateCmd.Flags().StringVarP(&vpcUpdateVpcId, "id", "i", "", "Specifies the VPC ID, which uniquely identifies the VPC.")
-	vpcUpdateCmd.Flags().StringVarP(&vpcUpdateVpcName, "name", "n", "", "Specifies the VPC name, which uniquely identifies the VPC.")
+	vpcUpdateCmd.Flags().StringVar(&vpcUpdateOldVpcName, "old-name", "", "Specifies the VPC name, which uniquely identifies the VPC.")
+	vpcUpdateCmd.Flags().StringVarP(&vpcUpdateVpcName, "new-name", "n", "", "")
 	vpcUpdateCmd.Flags().StringVarP(&vpcUpdateVpcCidr, "cidr", "c", "", "Specifies the available IP address ranges for subnets in the VPC. Possible values are as follows: 10.0.0.0/8-24, 172.16.0.0/12-24, 192.168.0.0/16-24")
 	vpcUpdateCmd.Flags().StringVarP(&vpcUpdateVpcDesc, "desc", "d", "", "Provides supplementary information about the VPC.")
 
