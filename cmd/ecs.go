@@ -334,6 +334,7 @@ var jobInfoCmd = &cobra.Command{
 var ecsAttachDiskVolumeId string
 var ecsAttachDiskEcsId string
 var ecsAttachDiskDevice string
+var ecsAttachDiskWaitUntilSuccess bool
 var ecsAttachDiskCmd = &cobra.Command{
 	Use:   "attach-disk",
 	Short: "This command is used to attach a disk to an ECS.",
@@ -342,6 +343,20 @@ var ecsAttachDiskCmd = &cobra.Command{
 		job, err := ecs.AttachDiskEcs(ProjectID, ecsAttachDiskEcsId, ecsAttachDiskVolumeId, ecsAttachDiskDevice)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
+			return
+		}
+		if ecsAttachDiskWaitUntilSuccess {
+			_, err := ecs.WaitUntilJobSuccess(ProjectID, job.JobID)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+				return
+			}
+			disks, err := ecs.GetListAttachedDisks(ProjectID, ecsAttachDiskEcsId)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				beautyfulPrints.PrintStruct(disks, jmesPathQuery)
+			}
 		} else {
 			beautyfulPrints.PrintStruct(job, jmesPathQuery)
 		}
@@ -420,11 +435,11 @@ var ecsBindPrivateIpCmd = &cobra.Command{
 	Short: "This command is used to configure a virtual IP address for an ECS NIC.",
 	Long:  `This command is used to configure a virtual IP address for an ECS NIC.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		disks, err := ecs.BindPrivateIp(ProjectID, ecsBindPrivateIpNicId, ecsBindPrivateIpSubnetId, ecsBindPrivateIpAddress, ecsBindPrivateIpReverseBinding)
+		ips, err := ecs.BindPrivateIp(ProjectID, ecsBindPrivateIpNicId, ecsBindPrivateIpSubnetId, ecsBindPrivateIpAddress, ecsBindPrivateIpReverseBinding)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
 		} else {
-			beautyfulPrints.PrintStruct(disks, jmesPathQuery)
+			beautyfulPrints.PrintStruct(ips, jmesPathQuery)
 		}
 	},
 }
@@ -435,11 +450,11 @@ var ecsUnbindPrivateIpCmd = &cobra.Command{
 	Short: "This command is used to configure a virtual IP address for an ECS NIC",
 	Long:  `This command is used to configure a virtual IP address for an ECS NIC`,
 	Run: func(cmd *cobra.Command, args []string) {
-		disks, err := ecs.BindPrivateIp(ProjectID, ecsBindPrivateIpNicId, "", "", false) //API for unbind IP is same as for bind, but all fields must be empty
+		ips, err := ecs.BindPrivateIp(ProjectID, ecsBindPrivateIpNicId, "", "", false) //API for unbind IP is same as for bind, but all fields must be empty
 		if err != nil {
 			beautyfulPrints.PrintError(err)
 		} else {
-			beautyfulPrints.PrintStruct(disks, jmesPathQuery)
+			beautyfulPrints.PrintStruct(ips, jmesPathQuery)
 		}
 	},
 }
@@ -691,6 +706,7 @@ func init() {
 	ecsAttachDiskCmd.Flags().StringVar(&ecsAttachDiskEcsId, "ecs-id", "", "Specifies ECS ID")
 	ecsAttachDiskCmd.Flags().StringVar(&ecsAttachDiskVolumeId, "vol-id", "", "Specifies volume ID")
 	ecsAttachDiskCmd.Flags().StringVar(&ecsAttachDiskDevice, "device", "", "Specifies device")
+	ecsAttachDiskCmd.Flags().BoolVar(&ecsAttachDiskWaitUntilSuccess, "wait-until-success", true, "")
 
 	ecsDetachDiskCmd.Flags().StringVarP(&ecsDetachDiskEcsId, "ecs-id", "e", "", "Specifies ECS ID")
 	ecsDetachDiskCmd.Flags().StringVarP(&ecsDetachDiskVolumeId, "vol-id", "v", "", "Specifies volume ID")
