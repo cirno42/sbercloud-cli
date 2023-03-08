@@ -147,6 +147,99 @@ var vpcDeleteCmd = &cobra.Command{
 	},
 }
 
+var vpcCreateTagKeys []string
+var vpcCreateTagValues []string
+var vpcCreateTagVpcId string
+var vpcCreateTagVpcName string
+var vpcCreateTagCmd = &cobra.Command{
+	Use:   "add-tags",
+	Short: "Command to add tags to VPC",
+	Long:  `Command to add tags to VPC`,
+	Run: func(cmd *cobra.Command, args []string) {
+		id, err := vpcUtils.GetVpcId(vpcCreateTagVpcId, vpcCreateTagVpcName, ProjectID)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+			return
+		}
+		err = vpcs.CreateVpcTag(ProjectID, id, vpcCreateTagKeys, vpcCreateTagValues)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
+var vpcDeleteTagKeys []string
+var vpcDeleteTagValues []string
+var vpcDeleteTagVpcId string
+var vpcDeleteTagVpcName string
+var vpcDeleteTagCmd = &cobra.Command{
+	Use:   "delete-tags",
+	Short: "Command to delete tags from VPC",
+	Long:  `Command to delete tags from VPC`,
+	Run: func(cmd *cobra.Command, args []string) {
+		id, err := vpcUtils.GetVpcId(vpcDeleteTagVpcId, vpcDeleteTagVpcName, ProjectID)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+			return
+		}
+		err = vpcs.DeleteVpcTag(ProjectID, id, vpcDeleteTagKeys, vpcDeleteTagValues)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
+var vpcGetVpcTagsVpcId string
+var vpcGetVpcTagsVpcName string
+var vpcGetTagsCmd = &cobra.Command{
+	Use:   "get-tags",
+	Short: "Command to get VPC tags",
+	Long:  `Command to get VPC tags`,
+	Run: func(cmd *cobra.Command, args []string) {
+		id, err := vpcUtils.GetVpcId(vpcGetVpcTagsVpcId, vpcGetVpcTagsVpcName, ProjectID)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+			return
+		}
+		tags, err := vpcs.GetVpcTags(ProjectID, id)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(tags, jmesPathQuery)
+		}
+	},
+}
+
+var vpcGetByTagsKeys []string
+var vpcGetByTagsValues []string
+var vpcGetByTagsAction string
+var vpcGetByTagsCmd = &cobra.Command{
+	Use:   "get-by-tags",
+	Short: "Command to get VPC tags",
+	Long:  `Command to get VPC tags`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if vpcGetByTagsAction == "count" {
+			count, err := vpcs.CountVpcByTags(ProjectID, vpcGetByTagsKeys, vpcGetByTagsValues)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				beautyfulPrints.PrintStruct(count, jmesPathQuery)
+			}
+		} else {
+			vpcs, err := vpcs.FilterVpcByTags(ProjectID, vpcGetByTagsKeys, vpcGetByTagsValues)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				beautyfulPrints.PrintStruct(vpcs, jmesPathQuery)
+			}
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(vpcCmd)
 
@@ -176,6 +269,27 @@ func init() {
 	vpcDeleteCmd.Flags().StringVarP(&deleteName, "name", "n", "", "Specifies the VPC name, which uniquely identifies the VPC.")
 	vpcDeleteCmd.Flags().StringVarP(&deleteID, "id", "i", "", "Specifies the VPC ID, which uniquely identifies the VPC.")
 	vpcDeleteCmd.Flags().BoolVarP(&vpcDeleteIsRecursive, "rec", "r", false, "Specifies recursive delete flag")
+
+	vpcCmd.AddCommand(vpcCreateTagCmd)
+	vpcCreateTagCmd.Flags().StringVarP(&vpcCreateTagVpcName, "name", "n", "", "Specifies the VPC name, which uniquely identifies the VPC.")
+	vpcCreateTagCmd.Flags().StringVarP(&vpcCreateTagVpcId, "id", "i", "", "Specifies the VPC ID, which uniquely identifies the VPC.")
+	vpcCreateTagCmd.Flags().StringSliceVarP(&vpcCreateTagKeys, "keys", "k", nil, "Specifies comma-separated tag keys. Key cannot be left blank. Key can contain a maximum of 36 characters. The tag key of a VPC must be unique")
+	vpcCreateTagCmd.Flags().StringSliceVarP(&vpcCreateTagValues, "values", "v", nil, "Specifies comma-separated tag values. Tag value can contain a maximum of 43 characters.")
+
+	vpcCmd.AddCommand(vpcDeleteTagCmd)
+	vpcDeleteTagCmd.Flags().StringVarP(&vpcDeleteTagVpcName, "name", "n", "", "Specifies the VPC name, which uniquely identifies the VPC.")
+	vpcDeleteTagCmd.Flags().StringVarP(&vpcDeleteTagVpcId, "id", "i", "", "Specifies the VPC ID, which uniquely identifies the VPC.")
+	vpcDeleteTagCmd.Flags().StringSliceVarP(&vpcDeleteTagKeys, "keys", "k", nil, "Specifies comma-separated tag keys. Key cannot be left blank. Key can contain a maximum of 36 characters. The tag key of a VPC must be unique")
+	vpcDeleteTagCmd.Flags().StringSliceVarP(&vpcDeleteTagValues, "values", "v", nil, "Specifies comma-separated tag values. Tag value can contain a maximum of 43 characters.")
+
+	vpcCmd.AddCommand(vpcGetTagsCmd)
+	vpcGetTagsCmd.Flags().StringVarP(&vpcGetVpcTagsVpcName, "name", "n", "", "Specifies the VPC name, which uniquely identifies the VPC.")
+	vpcGetTagsCmd.Flags().StringVarP(&vpcGetVpcTagsVpcId, "id", "i", "", "Specifies the VPC ID, which uniquely identifies the VPC.")
+
+	vpcCmd.AddCommand(vpcGetByTagsCmd)
+	vpcGetByTagsCmd.Flags().StringVarP(&vpcGetByTagsAction, "action", "a", "filter", "Specifies the operation to perform. The value can only be filter (filtering) or count (querying the total number).")
+	vpcGetByTagsCmd.Flags().StringSliceVarP(&vpcGetByTagsKeys, "keys", "k", nil, "Specifies comma-separated tag keys. Key cannot be left blank. Key can contain a maximum of 36 characters. The tag key of a VPC must be unique")
+	vpcGetByTagsCmd.Flags().StringSliceVarP(&vpcGetByTagsValues, "values", "v", nil, "Specifies comma-separated tag values. Tag value can contain a maximum of 43 characters.")
 }
 
 //todo: Add "vpc-" prefix to every flag variable

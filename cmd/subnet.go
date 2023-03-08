@@ -7,6 +7,7 @@ import (
 	"sbercloud-cli/api/subnets"
 	"sbercloud-cli/api/vpcs"
 	"sbercloud-cli/internal/beautyfulPrints"
+	"sbercloud-cli/internal/utils/vpcUtils"
 )
 
 var subnetCmd = &cobra.Command{
@@ -61,13 +62,18 @@ var subnetCreateCmd = &cobra.Command{
 var subnetListLimit int
 var subnetListMarker string
 var subnetListVpcID string
-
+var subnetListVpcName string
 var subnetGetListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Get list of subnets",
 	Long:  `Get list of subnets`,
 	Run: func(cmd *cobra.Command, args []string) {
-		subnets, err := subnets.GetSubnetsList(ProjectID, subnetListLimit, subnetListMarker, subnetListVpcID)
+		subnetId, err := vpcUtils.GetVpcId(subnetListVpcID, subnetListVpcName, ProjectID)
+		if err != nil && subnetListVpcName != "" {
+			beautyfulPrints.PrintError(err)
+			return
+		}
+		subnets, err := subnets.GetSubnetsList(ProjectID, subnetListLimit, subnetListMarker, subnetId)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
 		} else {
@@ -186,6 +192,7 @@ func init() {
 	subnetGetListCmd.Flags().IntVarP(&subnetListLimit, "limit", "l", 0, "Specifies the number of records that will be returned on each page. The value is from 0 to intmax.")
 	subnetGetListCmd.Flags().StringVarP(&subnetListMarker, "marker", "m", "", "Specifies a resource ID for pagination query, indicating that the query starts from the next record of the specified resource ID.")
 	subnetGetListCmd.Flags().StringVarP(&subnetListVpcID, "vpc-id", "v", "", "Specifies the ID of the VPC to which the subnet belongs")
+	subnetGetListCmd.Flags().StringVar(&subnetListVpcName, "vpc-name", "", "Specifies the name of the VPC to which the subnet belongs")
 
 	subnetCmd.AddCommand(subnetGetInfoCmd)
 	subnetGetInfoCmd.Flags().StringVarP(&subnetInfoSubnetName, "name", "n", "", "Specifies the ID of the subnet.")
