@@ -57,12 +57,13 @@ var ecsGetFlavorCmd = &cobra.Command{
 
 var ecsListOffset int
 var ecsListLimit int
+var ecsListTags string
 var ecsListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Get ECS list",
 	Long:  `Get ECS list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		ecs, err := ecs.GetECSList(ProjectID, ecsListOffset, ecsListLimit)
+		ecs, err := ecs.GetECSList(ProjectID, ecsListOffset, ecsListLimit, ecsListTags)
 		if err != nil {
 			beautyfulPrints.PrintError(err)
 		} else {
@@ -141,6 +142,7 @@ var ecsCreateFlavorType string
 var ecsCreateFlavorGen string
 var ecsCreateAssignEip bool
 var ecsCreateWaitUntilSuccess bool
+var ecsCreateTags []string
 var ecsCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create ECS",
@@ -183,7 +185,7 @@ var ecsCreateCmd = &cobra.Command{
 		if (ecsCreateAssignEip) && (ecsCreateEipBandwidthSize == 0) {
 			ecsCreateEipBandwidthSize = 5
 		}
-		createdEcs, err := ecs.CreateECS(ProjectID, vpcId, ecsCreateImageRef, ecsCreateName, flavorRef,
+		createdEcs, err := ecs.CreateECS(ProjectID, vpcId, ecsCreateImageRef, ecsCreateName, flavorRef, ecsCreateTags,
 			ecsCreateRootVolumeType, ecsCreateAvailabilityZone, ecsCreateEipId, ecsCreateEipType, ecsCreateEipBandwidthType, ecsCreateEipBandwidthSize, ecsCreateVolumeTypes,
 			subnetIds, ecsCreateSecGroupIds, ecsCreateVolumeSizes, ecsCreateAdminPass, ecsCreateKeyName, ecsCreateRootVolumeSize, ecsCreateCount)
 		if err != nil {
@@ -637,6 +639,7 @@ func init() {
 
 	ecsListCmd.Flags().IntVarP(&ecsListLimit, "limit", "l", 0, "Specifies the maximum number of ECSs on one page.")
 	ecsListCmd.Flags().IntVarP(&ecsListOffset, "offset", "o", 0, "Specifies a page number.")
+	ecsListCmd.Flags().StringVarP(&ecsListTags, "tag", "t", "", "Obtains the ECSs with specified tags. Tags must be in format <key>=value")
 
 	ecsFlavorListCmd.Flags().StringVarP(&ecsFlavorListAvailabilityZone, "availability_zone", "a", "", "")
 	ecsFlavorListCmd.Flags().IntVarP(&ecsFlavorListVcpus, "vcpus", "c", 0, "")
@@ -683,6 +686,7 @@ func init() {
 	ecsCreateCmd.Flags().StringVar(&ecsCreateVpcName, "vpc-name", "", "")
 	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateSubnetNames, "subnet-names", nil, "Specifies the subnets of the ECS.")
 	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateSGNames, "sg-names", nil, "Specifies the security groups of the ECS.")
+	ecsCreateCmd.Flags().StringSliceVar(&ecsCreateTags, "tags", nil, "Specifies ECS tags. A tag is in the format of \"key.value\", where the maximum lengths of key and value are 36 and 43 characters, respectively..")
 
 	ecsBatchStartCmd.Flags().StringSliceVarP(&ecsBatchStartServerIds, "id", "i", nil, "Specifies ECS IDs")
 	ecsBatchStartCmd.Flags().BoolVar(&ecsStartWaitUntilSuccess, "wait-until-success", true, "")

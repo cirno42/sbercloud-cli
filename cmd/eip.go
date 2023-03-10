@@ -124,6 +124,81 @@ var eipActiveListCmd = &cobra.Command{
 	},
 }
 
+var eipCreateTagKeys []string
+var eipCreateTagValues []string
+var eipCreateTagEipId string
+var eipCreateTagCmd = &cobra.Command{
+	Use:   "add-tags",
+	Short: "Command to add tags to EIP",
+	Long:  `Command to add tags to EIP`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := eip.CreateEipTag(ProjectID, eipCreateTagEipId, eipCreateTagKeys, eipCreateTagValues)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
+var eipDeleteTagKeys []string
+var eipDeleteTagValues []string
+var eipDeleteTagEipId string
+var eipDeleteTagCmd = &cobra.Command{
+	Use:   "delete-tags",
+	Short: "Command to delete tags from EIP",
+	Long:  `Command to delete tags from EIP`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := eip.DeleteEipTag(ProjectID, eipDeleteTagEipId, eipDeleteTagKeys, eipDeleteTagValues)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
+var eipGetEipTagsEipId string
+var eipGetTagsCmd = &cobra.Command{
+	Use:   "get-tags",
+	Short: "Command to get VPC tags",
+	Long:  `Command to get VPC tags`,
+	Run: func(cmd *cobra.Command, args []string) {
+		tags, err := eip.GetEipTags(ProjectID, eipGetEipTagsEipId)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(tags, jmesPathQuery)
+		}
+	},
+}
+
+var eipGetByTagsKeys []string
+var eipGetByTagsValues []string
+var eipGetByTagsAction string
+var eipGetByTagsCmd = &cobra.Command{
+	Use:   "get-by-tags",
+	Short: "Command to get subnet tags",
+	Long:  `Command to get subnet tags`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if eipGetByTagsAction == "count" {
+			count, err := eip.CountEipByTags(ProjectID, eipGetByTagsKeys, eipGetByTagsValues)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				beautyfulPrints.PrintStruct(count, jmesPathQuery)
+			}
+		} else {
+			eips, err := eip.FilterEipByTags(ProjectID, eipGetByTagsKeys, eipGetByTagsValues)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				beautyfulPrints.PrintStruct(eips, jmesPathQuery)
+			}
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(eipCmd)
 	eipCmd.PersistentFlags().StringVarP(&jmesPathQuery, "query", "q", "", "JMES Path query")
@@ -150,6 +225,24 @@ func init() {
 	eipCmdGetInfo.Flags().StringVarP(&eipCmdGetInfoPublicIpID, "id", "i", "", "Specifies ID of EIP")
 
 	eipActiveListCmd.Flags().BoolVarP(&listActiveIPsAllProject, "all-projects", "a", false, "")
+
+	eipCmd.AddCommand(eipCreateTagCmd)
+	eipCreateTagCmd.Flags().StringVarP(&eipCreateTagEipId, "id", "i", "", "Specifies the EIP ID, which uniquely identifies the EIP.")
+	eipCreateTagCmd.Flags().StringSliceVarP(&eipCreateTagKeys, "keys", "k", nil, "Specifies comma-separated tag keys. Key cannot be left blank. Key can contain a maximum of 36 characters. The tag key of a subnet must be unique")
+	eipCreateTagCmd.Flags().StringSliceVarP(&eipCreateTagValues, "values", "v", nil, "Specifies comma-separated tag values. Tag value can contain a maximum of 43 characters.")
+
+	eipCmd.AddCommand(eipDeleteTagCmd)
+	eipDeleteTagCmd.Flags().StringVarP(&eipDeleteTagEipId, "id", "i", "", "Specifies the VPC ID, which uniquely identifies the EIP.")
+	eipDeleteTagCmd.Flags().StringSliceVarP(&eipDeleteTagKeys, "keys", "k", nil, "Specifies comma-separated tag keys. Key cannot be left blank. Key can contain a maximum of 36 characters. The tag key of a VPC must be unique")
+	eipDeleteTagCmd.Flags().StringSliceVarP(&eipDeleteTagValues, "values", "v", nil, "Specifies comma-separated tag values. Tag value can contain a maximum of 43 characters.")
+
+	eipCmd.AddCommand(eipGetTagsCmd)
+	eipGetTagsCmd.Flags().StringVarP(&eipGetEipTagsEipId, "id", "i", "", "Specifies the EIP ID, which uniquely identifies the EIP.")
+
+	eipCmd.AddCommand(eipGetByTagsCmd)
+	eipGetByTagsCmd.Flags().StringVarP(&eipGetByTagsAction, "action", "a", "filter", "Specifies the operation to perform. The value can only be filter (filtering) or count (querying the total number).")
+	eipGetByTagsCmd.Flags().StringSliceVarP(&eipGetByTagsKeys, "keys", "k", nil, "Specifies comma-separated tag keys. Key cannot be left blank. Key can contain a maximum of 36 characters. The tag key of a VPC must be unique")
+	eipGetByTagsCmd.Flags().StringSliceVarP(&eipGetByTagsValues, "values", "v", nil, "Specifies comma-separated tag values. Tag value can contain a maximum of 43 characters.")
 }
 
 //todo: вынести значения по умолчанию в константы

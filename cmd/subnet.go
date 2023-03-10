@@ -7,6 +7,7 @@ import (
 	"sbercloud-cli/api/subnets"
 	"sbercloud-cli/api/vpcs"
 	"sbercloud-cli/internal/beautyfulPrints"
+	"sbercloud-cli/internal/utils/subnetUtils"
 	"sbercloud-cli/internal/utils/vpcUtils"
 )
 
@@ -160,6 +161,99 @@ var subnetDeleteCmd = &cobra.Command{
 	},
 }
 
+var subnetCreateTagKeys []string
+var subnetCreateTagValues []string
+var subnetCreateTagSubnetId string
+var subnetCreateTagSubnetName string
+var subnetCreateTagCmd = &cobra.Command{
+	Use:   "add-tags",
+	Short: "Command to add tags to subnet",
+	Long:  `Command to add tags to subnet`,
+	Run: func(cmd *cobra.Command, args []string) {
+		id, err := subnetUtils.GetSubnetId(subnetCreateTagSubnetId, subnetCreateTagSubnetName, ProjectID)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+			return
+		}
+		err = subnets.CreateSubnetTag(ProjectID, id, subnetCreateTagKeys, subnetCreateTagValues)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
+var subnetDeleteTagKeys []string
+var subnetDeleteTagValues []string
+var subnetDeleteTagSubnetId string
+var subnetDeleteTagSubnetName string
+var subnetDeleteTagCmd = &cobra.Command{
+	Use:   "delete-tags",
+	Short: "Command to delete tags from subnet",
+	Long:  `Command to delete tags from subnet`,
+	Run: func(cmd *cobra.Command, args []string) {
+		id, err := subnetUtils.GetSubnetId(subnetDeleteTagSubnetId, subnetDeleteTagSubnetName, ProjectID)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+			return
+		}
+		err = subnets.DeleteSubnetTag(ProjectID, id, subnetDeleteTagKeys, subnetDeleteTagValues)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			fmt.Println("OK")
+		}
+	},
+}
+
+var subnetGetSubnetTagsSubnetId string
+var subnetGetSubnetTagsSubnetName string
+var subnetGetTagsCmd = &cobra.Command{
+	Use:   "get-tags",
+	Short: "Command to get VPC tags",
+	Long:  `Command to get VPC tags`,
+	Run: func(cmd *cobra.Command, args []string) {
+		id, err := subnetUtils.GetSubnetId(subnetGetSubnetTagsSubnetId, subnetGetSubnetTagsSubnetName, ProjectID)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+			return
+		}
+		tags, err := subnets.GetSubnetTags(ProjectID, id)
+		if err != nil {
+			beautyfulPrints.PrintError(err)
+		} else {
+			beautyfulPrints.PrintStruct(tags, jmesPathQuery)
+		}
+	},
+}
+
+var subnetGetByTagsKeys []string
+var subnetGetByTagsValues []string
+var subnetGetByTagsAction string
+var subnetGetByTagsCmd = &cobra.Command{
+	Use:   "get-by-tags",
+	Short: "Command to get subnet tags",
+	Long:  `Command to get subnet tags`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if subnetGetByTagsAction == "count" {
+			count, err := subnets.CountSubnetByTags(ProjectID, subnetGetByTagsKeys, subnetGetByTagsValues)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				beautyfulPrints.PrintStruct(count, jmesPathQuery)
+			}
+		} else {
+			subnets, err := subnets.FilterSubnetByTags(ProjectID, subnetGetByTagsKeys, subnetGetByTagsValues)
+			if err != nil {
+				beautyfulPrints.PrintError(err)
+			} else {
+				beautyfulPrints.PrintStruct(subnets, jmesPathQuery)
+			}
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(subnetCmd)
 
@@ -204,6 +298,28 @@ func init() {
 	subnetDeleteCmd.Flags().StringVarP(&subnetDeleteVpcName, "vpc-name", "v", "", "Specifies the name of the VPC to which the subnet belongs")
 	subnetDeleteCmd.Flags().StringVar(&subnetDeleteVpcID, "vpc-id", "", "Specifies the ID of the VPC to which the subnet belongs")
 	subnetDeleteCmd.Flags().BoolVarP(&subnetDeleteIsRecursive, "rec", "r", false, "Specifies recursive delete flag")
+
+	subnetCmd.AddCommand(subnetCreateTagCmd)
+	subnetCreateTagCmd.Flags().StringVarP(&subnetCreateTagSubnetName, "name", "n", "", "Specifies the subnet name, which uniquely identifies the subnet.")
+	subnetCreateTagCmd.Flags().StringVarP(&subnetCreateTagSubnetId, "id", "i", "", "Specifies the subnet ID, which uniquely identifies the subnet.")
+	subnetCreateTagCmd.Flags().StringSliceVarP(&subnetCreateTagKeys, "keys", "k", nil, "Specifies comma-separated tag keys. Key cannot be left blank. Key can contain a maximum of 36 characters. The tag key of a subnet must be unique")
+	subnetCreateTagCmd.Flags().StringSliceVarP(&subnetCreateTagValues, "values", "v", nil, "Specifies comma-separated tag values. Tag value can contain a maximum of 43 characters.")
+
+	subnetCmd.AddCommand(subnetDeleteTagCmd)
+	subnetDeleteTagCmd.Flags().StringVarP(&subnetDeleteTagSubnetName, "name", "n", "", "Specifies the VPC name, which uniquely identifies the VPC.")
+	subnetDeleteTagCmd.Flags().StringVarP(&subnetDeleteTagSubnetId, "id", "i", "", "Specifies the VPC ID, which uniquely identifies the VPC.")
+	subnetDeleteTagCmd.Flags().StringSliceVarP(&subnetDeleteTagKeys, "keys", "k", nil, "Specifies comma-separated tag keys. Key cannot be left blank. Key can contain a maximum of 36 characters. The tag key of a VPC must be unique")
+	subnetDeleteTagCmd.Flags().StringSliceVarP(&subnetDeleteTagValues, "values", "v", nil, "Specifies comma-separated tag values. Tag value can contain a maximum of 43 characters.")
+
+	subnetCmd.AddCommand(subnetGetTagsCmd)
+	subnetGetTagsCmd.Flags().StringVarP(&subnetGetSubnetTagsSubnetName, "name", "n", "", "Specifies the VPC name, which uniquely identifies the VPC.")
+	subnetGetTagsCmd.Flags().StringVarP(&subnetGetSubnetTagsSubnetId, "id", "i", "", "Specifies the VPC ID, which uniquely identifies the VPC.")
+
+	subnetCmd.AddCommand(subnetGetByTagsCmd)
+	subnetGetByTagsCmd.Flags().StringVarP(&subnetGetByTagsAction, "action", "a", "filter", "Specifies the operation to perform. The value can only be filter (filtering) or count (querying the total number).")
+	subnetGetByTagsCmd.Flags().StringSliceVarP(&subnetGetByTagsKeys, "keys", "k", nil, "Specifies comma-separated tag keys. Key cannot be left blank. Key can contain a maximum of 36 characters. The tag key of a VPC must be unique")
+	subnetGetByTagsCmd.Flags().StringSliceVarP(&subnetGetByTagsValues, "values", "v", nil, "Specifies comma-separated tag values. Tag value can contain a maximum of 43 characters.")
+
 }
 
 //todo: Some flags might be persistent

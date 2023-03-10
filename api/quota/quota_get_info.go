@@ -56,7 +56,7 @@ func GetInfoAboutServerQuota(projectID string) ([]quotaModels.QuotaModel, error)
 	if err != nil {
 		return nil, err
 	}
-	servers, err := ecs.GetECSList(projectID, 0, 1000)
+	servers, err := ecs.GetECSList(projectID, 0, 1000, "")
 	if err != nil {
 		return nil, err
 	}

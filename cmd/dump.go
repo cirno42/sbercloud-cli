@@ -54,7 +54,7 @@ var dumpCmd = &cobra.Command{
 			fmt.Print(err)
 			return
 		}
-		servers, err := ecs.GetECSList(ProjectID, 0, 0)
+		servers, err := ecs.GetECSList(ProjectID, 0, 0, "")
 		if err != nil {
 			fmt.Print(err)
 			return

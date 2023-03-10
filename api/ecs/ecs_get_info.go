@@ -18,7 +18,7 @@ type ecsQueryingResponse struct {
 	Server ecsModels.ECSModel `json:"server"`
 }
 
-func GetECSList(projectID string, offset, limit int) ([]ecsModels.ECSModel, error) {
+func GetECSList(projectID string, offset, limit int, tags string) ([]ecsModels.ECSModel, error) {
 	endpoint := fmt.Sprintf(endpoints.GetEndpointAddress(endpoints.EscEndpoint)+"/v1/%s/cloudservers/detail?", projectID)
 	if offset != 0 {
 		s := strconv.FormatInt(int64(limit), 10)
@@ -27,6 +27,9 @@ func GetECSList(projectID string, offset, limit int) ([]ecsModels.ECSModel, erro
 	if limit != 0 {
 		s := strconv.FormatInt(int64(limit), 10)
 		endpoint += "&limit=" + s
+	}
+	if tags != "" {
+		endpoint += "&tags=" + tags
 	}
 	var ecsArray listEcsQueryingResponse
 	err := requestMakers.CreateAndDoRequestInSpecifiedProject(endpoint, projectID, requestMakers.HTTP_METHOD_GET, nil, &ecsArray)

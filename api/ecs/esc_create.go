@@ -64,10 +64,10 @@ type ecsCreateParameters struct {
 	Publicip         *publicIp    `json:"publicip"`
 	KeyName          string       `json:"key_name"`
 	Count            int          `json:"count"`
-	ServerTags       []serverTag  `json:"server_tags"`
+	Tags             []string     `json:"tags"`
 }
 
-func CreateECS(projectID, vpcID, imageRef, name, flavorRef, rootVolumeType, availabilityZone, eipId, eipType, bandwidthType string,
+func CreateECS(projectID, vpcID, imageRef, name, flavorRef string, tags []string, rootVolumeType, availabilityZone, eipId, eipType, bandwidthType string,
 	bandwidthSize int, dataVolumesTypes, subnetIds []string, secGroupIds []string, dataVolumesSizes []int, adminPass, keyName string, rootVolumeSize, count int) (*ecsModels.ESCJobID, error) {
 
 	endpoint := fmt.Sprintf("https://ecs.ru-moscow-1.hc.sbercloud.ru/v1/%s/cloudservers", projectID)
@@ -109,7 +109,7 @@ func CreateECS(projectID, vpcID, imageRef, name, flavorRef, rootVolumeType, avai
 		KeyName:          keyName,
 		AdminPass:        adminPass,
 		Count:            count,
-		ServerTags:       nil,
+		Tags:             tags,
 	}}
 	var createdJobID ecsModels.ESCJobID
 	err := requestMakers.CreateAndDoRequest(endpoint, requestMakers.HTTP_METHOD_POST, &ecsRequest, &createdJobID, nil)
