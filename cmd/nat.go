@@ -3,10 +3,10 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"github.com/cirno42/sbercloud-api/api/models/natModels"
+	"github.com/cirno42/sbercloud-api/api/nat"
+	"github.com/cirno42/sbercloud-api/api/vpcs"
 	"github.com/spf13/cobra"
-	"sbercloud-cli/api/models/natModels"
-	"sbercloud-cli/api/nat"
-	"sbercloud-cli/api/vpcs"
 	"sbercloud-cli/internal/beautyfulPrints"
 )
 

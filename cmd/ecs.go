@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/cirno42/sbercloud-api/api/ecs"
+	"github.com/cirno42/sbercloud-api/api/subnets"
+	"github.com/cirno42/sbercloud-api/api/vpcs"
 	"github.com/spf13/cobra"
-	"sbercloud-cli/api/ecs"
-	"sbercloud-cli/api/subnets"
-	"sbercloud-cli/api/vpcs"
 	"sbercloud-cli/internal/beautyfulPrints"
 )
 

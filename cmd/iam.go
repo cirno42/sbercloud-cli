@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	"github.com/cirno42/sbercloud-api/api/iam"
 	"github.com/spf13/cobra"
-	"sbercloud-cli/api/iam"
 	"sbercloud-cli/internal/beautyfulPrints"
 )
 

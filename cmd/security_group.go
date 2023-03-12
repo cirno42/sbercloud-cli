@@ -3,9 +3,9 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"github.com/cirno42/sbercloud-api/api/models/securityGroupModels"
+	"github.com/cirno42/sbercloud-api/api/securityGroup"
 	"github.com/spf13/cobra"
-	"sbercloud-cli/api/models/securityGroupModels"
-	"sbercloud-cli/api/securityGroup"
 	"sbercloud-cli/internal/beautyfulPrints"
 )
 

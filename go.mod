@@ -3,6 +3,7 @@ module sbercloud-cli
 go 1.16
 
 require (
+	github.com/cirno42/sbercloud-api v0.3.2
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/hokaccha/go-prettyjson v0.0.0-20211117102719-0474bc63780f
 	github.com/jmespath/go-jmespath v0.4.0

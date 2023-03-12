@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/cirno42/sbercloud-api/api/eip"
+	"github.com/cirno42/sbercloud-api/api/models/eipModels"
 	"github.com/spf13/cobra"
-	"sbercloud-cli/api/eip"
-	"sbercloud-cli/api/models/eipModels"
 	"sbercloud-cli/internal/beautyfulPrints"
 )
 

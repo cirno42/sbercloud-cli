@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	"github.com/cirno42/sbercloud-api/api/availabilityZone"
 	"github.com/spf13/cobra"
-	"sbercloud-cli/api/availabilityZone"
 	"sbercloud-cli/internal/beautyfulPrints"
 )
 

@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/cirno42/sbercloud-api/api/evs"
 	"github.com/spf13/cobra"
-	"sbercloud-cli/api/evs"
 	"sbercloud-cli/internal/beautyfulPrints"
 )
 

@@ -1,6 +1,6 @@
 package subnetUtils
 
-import "sbercloud-cli/api/subnets"
+import "github.com/cirno42/sbercloud-api/api/subnets"
 
 func GetSubnetId(subnetId, subnetName, projectId string) (string, error) {
 	if subnetId != "" {

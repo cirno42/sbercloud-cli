@@ -3,14 +3,14 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/cirno42/sbercloud-api/api/eip"
+	"github.com/cirno42/sbercloud-api/api/models/dumpModels"
+	"github.com/cirno42/sbercloud-api/api/nat"
+	"github.com/cirno42/sbercloud-api/api/subnets"
+	"github.com/cirno42/sbercloud-api/api/vpcs"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
-	"sbercloud-cli/api/eip"
-	"sbercloud-cli/api/models/dumpModels"
-	"sbercloud-cli/api/nat"
-	"sbercloud-cli/api/subnets"
-	"sbercloud-cli/api/vpcs"
 )
 
 var restoreCmd = &cobra.Command{

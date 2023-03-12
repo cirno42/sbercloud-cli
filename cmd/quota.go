@@ -1,9 +1,9 @@
 package cmd
 
 import (
+	"github.com/cirno42/sbercloud-api/api/models/quotaModels"
+	"github.com/cirno42/sbercloud-api/api/quota"
 	"github.com/spf13/cobra"
-	"sbercloud-cli/api/models/quotaModels"
-	"sbercloud-cli/api/quota"
 	"sbercloud-cli/internal/beautyfulPrints"
 )
 

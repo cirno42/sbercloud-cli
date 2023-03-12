@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/cirno42/sbercloud-api/api/models/vpcModels"
+	"github.com/cirno42/sbercloud-api/api/vpcs"
 	"github.com/spf13/cobra"
-	"sbercloud-cli/api/models/vpcModels"
-	"sbercloud-cli/api/vpcs"
 	"sbercloud-cli/internal/beautyfulPrints"
 	"sbercloud-cli/internal/utils/vpcUtils"
 )

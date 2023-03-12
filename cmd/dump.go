@@ -2,16 +2,16 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/cirno42/sbercloud-api/api/ecs"
+	"github.com/cirno42/sbercloud-api/api/eip"
+	"github.com/cirno42/sbercloud-api/api/evs"
+	"github.com/cirno42/sbercloud-api/api/models/dumpModels"
+	"github.com/cirno42/sbercloud-api/api/nat"
+	"github.com/cirno42/sbercloud-api/api/securityGroup"
+	"github.com/cirno42/sbercloud-api/api/subnets"
+	"github.com/cirno42/sbercloud-api/api/vpcs"
 	"github.com/spf13/cobra"
 	"os"
-	"sbercloud-cli/api/ecs"
-	"sbercloud-cli/api/eip"
-	"sbercloud-cli/api/evs"
-	"sbercloud-cli/api/models/dumpModels"
-	"sbercloud-cli/api/nat"
-	"sbercloud-cli/api/securityGroup"
-	"sbercloud-cli/api/subnets"
-	"sbercloud-cli/api/vpcs"
 	"sbercloud-cli/internal/beautyfulPrints"
 )
 
