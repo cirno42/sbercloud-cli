@@ -49,7 +49,7 @@ var configureCmd = &cobra.Command{
 			config["PROJECT_ID"] = projectId
 			config["OUTPUT_FORMAT"] = output
 			config["REGION"] = region
-			err := godotenv.Write(config, ".env")
+			err := godotenv.Write(config, ".config")
 			if err != nil {
 				fmt.Println("Error while writing file: ", err)
 				return
